@@ -187,11 +187,11 @@
                 </div>
             </div>
         </center>
-        <form method="post" action="{% url 'feedback' %}">
+        <!-- <form method="post" action="{% url 'feedback' %}">
             {% csrf_token %}
           <button class="submit" >Issue Resolved</button>
           <button  class="submit">Issue Unresolved</button>
-        </form>
+        </form> -->
        
         
 
@@ -284,8 +284,8 @@
             // Load the map after the page is fully loaded
             google.maps.event.addDomListener(window, 'load', initMap);
             function checkIssueStatus() {
-                
-                fetch('http://127.0.0.1:8000/check_booking_status')
+                const instanceIPorDomain = "{{ instance_ip_or_domain }}";
+                fetch(`http://${instanceIPorDomain}:8001/check_booking_status`)
                     .then(response => response.json())
                     .then(data => {
                         // Check if the issue is resolved

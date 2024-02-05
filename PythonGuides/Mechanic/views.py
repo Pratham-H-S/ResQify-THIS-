@@ -288,7 +288,7 @@ def next_page(request):
     # Your other view logic goes here
 
     return HttpResponse("Response from Django backend")
-
+import os
 def mech_dashboard(request):
             username = request.session['username']
             locations=[]
@@ -322,12 +322,14 @@ def mech_dashboard(request):
 
                 print(locations)
             
+            instance_ip_or_domain = os.environ.get('INSTANCE_IP_OR_DOMAIN', '127.0.0.1')
             context = {
                 "key": key, 
             "locations": locations,
                 
-                
+              'instance_ip_or_domain': instance_ip_or_domain
                 } 
+            print(instance_ip_or_domain)
             return render(request,'Mechanic/service-1.html',context=context)
 
 def display_info(request,username):
@@ -514,7 +516,7 @@ def mech_feedback(request):
 
 def mech_resolved(request):
     if request.method == 'POST':
-        status = Booking_status.objects.get(mech_username = request.session['username'] )
+        status = Booking_status.objects.get(mech_username = request.session['username'] ,issue_resolved_status = 0 )
         print(status)
         status.issue_resolved_status = '1'
         ustatus = UsersCurrentAddress.objects.get(username = status.cust_username)

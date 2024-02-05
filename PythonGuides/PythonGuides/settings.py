@@ -12,6 +12,7 @@ https://docs.djangoproject.com/en/4.2/ref/settings/
 
 from pathlib import Path
 from django.core.mail import send_mail
+import os
 
 ALLOWED_HOSTS = ['*']
 
@@ -26,6 +27,7 @@ EMAIL_USE_SSL = False
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
+INSTANCE_IP_OR_DOMAIN = os.environ.get('INSTANCE_IP_OR_DOMAIN', '127.0.0.1')
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/4.2/howto/deployment/checklist/
@@ -88,12 +90,23 @@ ENCRYPT_KEY = b'tmzHcYuvLUhxjcxZ4k_iqfCx-HUq6PCvdbXr4vOC5B4='
 # Database
 # https://docs.djangoproject.com/en/4.2/ref/settings/#databases
 
+# DATABASES = {
+#     "default": {
+#         "ENGINE": "django.db.backends.sqlite3",
+#         "NAME": BASE_DIR / "db.sqlite3",
+#     }
+# }
 DATABASES = {
-    "default": {
-        "ENGINE": "django.db.backends.sqlite3",
-        "NAME": BASE_DIR / "db.sqlite3",
+    'default': {
+        'ENGINE': 'django.db.backends.mysql',
+        'NAME': 'ResQify',
+        'USER': 'root',
+        'PASSWORD': 'root',
+        'HOST': 'localhost',  # Set to the appropriate MySQL host
+        'PORT': '3306',       # Set to the appropriate MySQL port
     }
 }
+
 
 
 # Password validation

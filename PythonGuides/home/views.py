@@ -11,7 +11,7 @@ import json
 from datetime import datetime
 from django.core.mail import send_mail
 from PythonGuides.settings import EMAIL_HOST_USER
-
+import os
 def navbar(request):
     if request.method == 'POST':
         username = (request.session['cust_username'])
@@ -42,10 +42,14 @@ def navbar(request):
             locations.append(data)
 
             print(locations)
+            instance_ip_or_domain = os.environ.get('INSTANCE_IP_OR_DOMAIN', '127.0.0.1')
         context = {
             "key": key, 
            "locations": locations,
-            "address" : address, 
+            "address" : address,
+            'instance_ip_or_domain':instance_ip_or_domain
+            
+             
             }
             
         return render(request, 'customer_map.html', context=context)
@@ -151,7 +155,9 @@ def login(request):
             if(decrypted == password):
                 request.session['cust_name'] = verify.name
                 request.session['cust_username'] = verify.username
-                return JsonResponse({'success': True})
+                instance_ip_or_domain = os.environ.get('INSTANCE_IP_OR_DOMAIN', '127.0.0.1')
+                context = {'instance_ip_or_domain':instance_ip_or_domain}
+                return render(request,'accept_rules.html',context= context)
             else:
                 return JsonResponse({'error': 'Invalid username or password'})
         except:
@@ -194,6 +200,7 @@ def save_location(request):
             udata = UsersCurrentAddress.objects.get(username = username)
             udata.lat = latitude
             udata.lng = longitude
+            print(latitude)
             udata.save()
             # if (UsersCustomer.objects.filter(username =username).exists() == True):
       
@@ -211,11 +218,12 @@ def save_location(request):
                 }
 
                 locations.append(data)
-
+            instance_ip_or_domain = os.environ.get('INSTANCE_IP_OR_DOMAIN', '127.0.0.1')
             print(locations)
             context = {
                 "key": key, 
-                "locations": locations
+                "locations": locations,
+                'instance_ip_or_domain': instance_ip_or_domain
             }
             
             return render(request, 'customer_map.html', context)
@@ -353,9 +361,12 @@ def vehicle_details(request):
             locations.append(data)
 
             print(locations)
+        instance_ip_or_domain = os.environ.get('INSTANCE_IP_OR_DOMAIN', '127.0.0.1')
         context = {
                 "key": key, 
-                "locations": locations
+                "locations": locations,
+                'instance_ip_or_domain': instance_ip_or_domain
+
         }
             
         return render(request, 'loading_bar.html', context)
@@ -436,6 +447,8 @@ def waiting_page(request):
         }
         print(cust_lat)
         locations.append(data)
+        instance_ip_or_domain = os.environ.get('INSTANCE_IP_OR_DOMAIN', '127.0.0.1')
+
         return render(request,'waiting_page.html',
                     {'card_data':mech_username,
                     'mech_name':mech_name,
@@ -444,6 +457,7 @@ def waiting_page(request):
                     'locations' :locations,
                     'phone' : mech.mobile,
                     'address': mech_add.mech_Address,
+                    'instance_ip_or_domain': instance_ip_or_domain
                     
                     })
     else:

@@ -67,7 +67,7 @@
                 <div class="collapse navbar-collapse justify-content-end" id="navbarNav">
                     <ul class="navbar-nav">
                         <li class="nav-item">
-                            <a class="nav-link active" aria-current="page" href="#">Profile</a>
+                            <a class="nav-link active" aria-current="page" href="{% url 'mech_profile'  %}">Profile</a>
                         </li>
                         <li class="nav-item dropdown">
                             <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button"
@@ -98,7 +98,7 @@
     let map;
     let infoWindow = [];
     let locations = {{ locations|safe }};
-    
+    console.log("Instance IP or Domain:", "{{ instance_ip_or_domain }}");
     function initMap() {
         map = new google.maps.Map(document.getElementById("map"), {
             center: { lat:  12.9675955, lng: 77.5963159}, // Set initial center coordinates
@@ -110,9 +110,9 @@
         setInterval(updateMapData, 30000000);
         setInterval(renderCards, 30000);
     }
-    
+    const instanceIPorDomain = "{{ instance_ip_or_domain }}";
     function updateMapData() {
-        fetch('http://127.0.0.1:8000/mechanic/update_map')  // Replace with the actual URL to fetch updated data
+        fetch("http://{{instance_ip_or_domain|safe}}:8001/mechanic/update_map")  // Replace with the actual URL to fetch updated data
             .then(response => response.json())
             .then(data => {
                 locations = data;
@@ -155,7 +155,12 @@
                 return 'http://maps.google.com/mapfiles/ms/icons/red-dot.png';
         }
     }
-    fetch('http://127.0.0.1:8000/mechanic/get_vehicle_data')
+  
+    
+    const url = `http://${instanceIPorDomain}:8001/mechanic/get_vehicle_data`;
+    console.log("Fetch URL:", url);
+
+    fetch(url)
             .then(response => response.json())
             .then(data => renderCards(data))
             .catch(error => console.error('Error fetching data:', error));
@@ -202,8 +207,8 @@
         function showPosition(position) {
             x.innerHTML = "Latitude: " + position;
   
-            // Send data to Django backend
-            fetch('http://127.0.0.1:8000/mechanic/process_request', {
+            const instanceIPorDomain = "{{ instance_ip_or_domain }}";
+            fetch("http://{{instance_ip_or_domain}}:8001/mechanic/process_request", {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -241,8 +246,10 @@
                 // Add other fields as needed
             };
         
-            // Send data to the backend using a POST request
-            fetch('http://127.0.0.1:8000/mechanic/process_request', {
+            // Send data to the backend using a POST request 
+            const instanceIPorDomain = "{{ instance_ip_or_domain }}";
+            console.log("Instance IP or Domain:", instanceIPorDomain);
+            fetch("http://{{instance_ip_or_domain}}:8001/mechanic/process_request", {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
