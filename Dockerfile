@@ -4,8 +4,8 @@ WORKDIR /PythonGuides
 # Copy the current directory contents into the container at /app
 COPY . /PythonGuides
 
-RUN pip install -r /Requirements.txt
-RUN pip install mysqlclient
+RUN pip install -r ./Requirements.txt
+
 RUN /usr/local/bin/pip install --upgrade pip
 RUN python manage.py migrate
 ENV INSTANCE_IP_OR_DOMAIN=default_value

@@ -10,9 +10,10 @@ Django==4.2.7
 django-crispy-forms==2.1
 googlemaps==4.10.0
 idna==3.6
+mysqlclient==2.2.3
 pycparser==2.21
 requests==2.31.0
 sqlparse==0.4.4
 tzdata==2023.3
 urllib3==2.1.0
-
+vboxapi==1.0
