@@ -65,7 +65,7 @@ p {
         {% if bookings %}
             {% for booking in bookings %}
             <div class="card">
-                <h2>{{ booking.mech_name }}</h2>
+                <h2>{{ booking.cust_username }}</h2>
                 <p>Date: {{ booking.booking_date }}</p>
                 <p>Location: {{ booking.booking_time }}</p>
                 <p>Status: {{ booking.issue_desc }}</p>

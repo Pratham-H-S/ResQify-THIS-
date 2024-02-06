@@ -52,6 +52,17 @@ class Profile_mechanic(models.Model):
     class Meta:
         db_table="Profile_mechanic"
 
+class mech_Bookings(models.Model):
+    mech_username =models.CharField(max_length=500,blank=True, null=True) 
+    cust_username =models.CharField(max_length=500,blank=True, null=True)  
+
+    booking_date = models.CharField(max_length=200,blank=True, null=True)
+    booking_time = models.CharField(max_length=200,blank=True, null=True)
+    issue_desc = models.CharField(max_length=2000,blank=True, null=True)
+
+    class Meta:
+        db_table="mech_Bookings"
+
 # class central_status_manager(models.Model):
 #     cust_username = models.CharField(max_length=500,blank=True, null=True)
 #     mech_username = models.CharField(max_length=500,blank=True, null=True)

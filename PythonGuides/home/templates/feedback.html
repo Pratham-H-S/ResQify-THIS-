@@ -236,11 +236,11 @@
         <div class="rating-section">
         <form method="post">
             {% csrf_token %}
-            <span class="stars" onclick="rateMechanic(1)">★</span>
-            <span class="stars" onclick="rateMechanic(2)">★</span>
-            <span class="stars" onclick="rateMechanic(3)">★</span>
-            <span class="stars" onclick="rateMechanic(4)">★</span>
-            <span class="stars" onclick="rateMechanic(5)">★</span>
+            <!-- <span class="stars" onclick="rateMechanic(1)" name = "1">★</span>
+            <span class="stars" onclick="rateMechanic(2)" name = "2">★</span>
+            <span class="stars" onclick="rateMechanic(3)" name = "3">★</span>
+            <span class="stars" onclick="rateMechanic(4)" name = "4">★</span>
+            <span class="stars" onclick="rateMechanic(5)" name = "5">★</span> -->
             <label for="{{ form.rating.id_for_label }}">Rating:</label>
             {{ form.rating }}
             <br>

@@ -470,17 +470,8 @@ def feedback(request):
         status = Booking_status.objects.get(cust_username = cust_username )
         # feedback_desc = request.POST.get('desc', '')
         
-        # # try:
-        # #     star1 = request.POST["star1"]
-        # #     rating = 1
-        # # except:
-        # #     star2 = request.POST["star2"]
-        # #     rating = 2
-        # rating = 4
-        
-        # feed = Feedback(issueid = status.issueid,desc = feedback_desc,rating = rating,cust_name= status.cust_name,cust_username= status.cust_username,mech_name = status.mech_name ,mech_username= status.mech_username)
-        # feed.save()
         form = FeedbackForm(request.POST)
+        
         if form.is_valid():
             form.save()
         status.issue_resolved_status = 1
@@ -493,7 +484,7 @@ def feedback(request):
         booking.issue_desc = issue.issuedesc
         booking.save()   
         no_of_bookings = Profile.objects.get(cust_username = cust_username)
-        b = int(profile.no_of_bookings)
+        b = int(no_of_bookings.no_of_bookings)
         b += 1
         no_of_bookings.save()
         profile = Profile_mechanic.objects.get(mech_username = status.mech_username )

@@ -34,9 +34,9 @@ def signup_mech(request):
                     return redirect('verify_email_otp')
                 
             else:
-                return render(request, 'login_final.html')
+                return render(request, 'Mechanic/loginSignup.html')
         
-    return render(request,'Mechanic/login_final.html')
+    return render(request,'Mechanic/loginSignup.html')
 
 
 global no
@@ -99,7 +99,7 @@ def mech_details(request):
          
    
 
-    return render(request,'Mechanic/mech_details.html')
+    return render(request,'Mechanic/loginSignup.html')
 
 def mech_login(request):
     if request.method == 'POST':
@@ -121,7 +121,7 @@ def mech_login(request):
             print(f"Exception: {e}")
             return HttpResponse("An error occurred during login.")
     
-    return render(request,'Mechanic/login_final.html')
+    return render(request,'Mechanic/loginSignup.html')
 
 def mech_forgot_password(request):
     if request.method == 'POST':
@@ -404,7 +404,7 @@ def display_info(request,username):
     status.booking_time = time
     status.booking_date = formatted_datetime
     status.save()
-    book = Bookings(cust_username = cust_username, mech_name= mech_name, booking_date =formatted_datetime, booking_time = time, issue_desc = add.issuedesc )
+    book = mech_Bookings(mech_username = mech_username, cust_username= cust_username, booking_date =formatted_datetime, booking_time = time, issue_desc = add.issuedesc )
     book.save()
     profile = Profile_mechanic.objects.get(mech_username = mech_username )
     val = int(profile.no_of_bookings)
@@ -536,4 +536,18 @@ def mech_unresolved(request):
     return  redirect('home_page')
 
 def mech_bookings(request):
-    return render(request,"Mechanic/service-1.html")
+    mech_username = request.session['username']
+    bookings = []
+    book_data = mech_Bookings.objects.filter(mech_username = mech_username)
+    for i in book_data:
+        
+        data = {
+            "booking_time" : i.booking_time,
+            "booking_date" : i.booking_date,
+            "mech_name" : i.cust_username,
+            
+            "issue_desc" : i.issue_desc 
+        }
+        bookings.append(data)
+
+    return render(request,"Mechanic/Bookings.html",{"bookings":bookings})

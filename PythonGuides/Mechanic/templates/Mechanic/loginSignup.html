@@ -17,7 +17,7 @@
 			<div class="col align-items-center flex-col sign-up">
 				<div class="form-wrapper align-items-center">
 					<div class="form sign-up">
-						<form method="post" action="{% url 'signup' %}" >
+						<form method="post" action="{% url 'signup_mech' %}" >
 							{% csrf_token %}
 						<div class="input-group">
 							<i class='bx bxs-user'></i>
@@ -69,7 +69,7 @@
 				<div class="form-wrapper align-items-center">
 					
 					<div class="form sign-in" >
-						<form method="post" action="{% url 'login' %}" >
+						<form method="post" action="{% url 'mech_login' %}" >
 							{% csrf_token %}
 						<div class="input-group">
 							<i class='bx bxs-user'></i>
@@ -82,7 +82,7 @@
 						<button>
 							Sign in
 						</button>
-						<p class="forgot-pass"><a href="{% url 'forgot_password' %}" style="text-decoration: none;"><b>Forgot password?</b></a></p>
+						<p class="forgot-pass"><a href="{% url 'mech_forgot_password' %}" style="text-decoration: none;"><b>Forgot password?</b></a></p>
 						<p>
 							<span>
 								Don't have an account?
@@ -109,7 +109,7 @@
 			<div class="col align-items-center flex-col">
 				<div class="text sign-in">
 					<h2>
-						Welcome Customer
+						Welcome Mechanic
 					</h2>
 	
 				</div>
