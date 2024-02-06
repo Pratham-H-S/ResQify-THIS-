@@ -10,32 +10,38 @@
 <body>
   <div id="container" class="container">
 		<!-- FORM SECTION -->
-		<form method="post" action="{% url 'login' %}">
-			{% csrf_token %}
+		
 		<div class="row">
 			<!-- SIGN UP -->
+			
 			<div class="col align-items-center flex-col sign-up">
 				<div class="form-wrapper align-items-center">
 					<div class="form sign-up">
+						<form method="post" action="{% url 'signup' %}">
+							{% csrf_token %}
 						<div class="input-group">
 							<i class='bx bxs-user'></i>
-							<input type="text" placeholder="Name">
+							<input type="text" placeholder="Name" name="name">
+						</div>
+						<div class="input-group">
+							<i class='bx bxs-user'></i>
+							<input type="text" placeholder="Username" name="username">
 						</div>
             <div class="input-group">
 							<i class='bx bx-mail-send'></i>
-							<input type="tel" placeholder="Mobile number" maxlength="10">
+							<input type="tel" placeholder="Mobile number" maxlength="10" name="phone">
 						</div>
 						<div class="input-group">
 							<i class='bx bx-mail-send'></i>
-							<input type="email" placeholder="Email">
+							<input type="email" placeholder="Email" name="email">
 						</div>
 						<div class="input-group">
 							<i class='bx bxs-lock-alt'></i>
-							<input type="password" placeholder="Password">
+							<input type="password" placeholder="Password" name="pass1">
 						</div>
 						<div class="input-group">
 							<i class='bx bxs-lock-alt'></i>
-							<input type="password" placeholder="Confirm password">
+							<input type="password" placeholder="Confirm password" name="pass2" >
 						</div>
 						<button>
 							Sign up
@@ -48,34 +54,35 @@
 								<b>Sign in here
                 </b></b>
 						</p>
+					</form>
 					</div>
+					
+
 				</div>
 			
 			</div>
-			</form>
+			
 			<!-- END SIGN UP -->
 			<!-- SIGN IN -->
-			<form method="post" action="{% url 'login' %}">
-                {% csrf_token %}
+			
 			<div class="col align-items-center flex-col sign-in">
 				<div class="form-wrapper align-items-center">
-					<div class="form sign-in">
+					
+					<div class="form sign-in" >
+						<form method="post" action="{% url 'login' %}"  >
+							{% csrf_token %}
 						<div class="input-group">
 							<i class='bx bxs-user'></i>
-							<input type="text" placeholder="Username">
+							<input type="text" placeholder="Username" name="username">
 						</div>
 						<div class="input-group">
 							<i class='bx bxs-lock-alt'></i>
-							<input type="password" placeholder="Password">
+							<input type="password" placeholder="Password" name="password">
 						</div>
 						<button>
 							Sign in
 						</button>
-						<p>
-							<b>
-								Forgot password?
-							</b>
-						</p>
+						<p class="forgot-pass"><a href="{% url 'forgot_password' %}" style="text-decoration: none;"><b>Forgot password?</b></a></p>
 						<p>
 							<span>
 								Don't have an account?
@@ -84,13 +91,15 @@
 								Sign up here
 							</b>
 						</p>
+						</form>
 					</div>
+				
 				</div>
 				<div class="form-wrapper">
 		
 				</div>
 			</div>
-			</form>
+		
 			<!-- END SIGN IN -->
 		</div>
 		<!-- END FORM SECTION -->
@@ -100,7 +109,7 @@
 			<div class="col align-items-center flex-col">
 				<div class="text sign-in">
 					<h2>
-						Welcome
+						Welcome Customer
 					</h2>
 	
 				</div>
@@ -128,4 +137,36 @@
 
       <script src="{% static 'loginSignup.js' %}"></script>
 </body>
+<script>
+	document.getElementById('loginForm').addEventListener('submit', function (event) {
+		event.preventDefault();
+
+		fetch(this.action, {
+			method: this.method,
+			headers: {
+				'Content-Type': 'application/x-www-form-urlencoded',
+				'X-CSRFToken': this.elements['csrfmiddlewaretoken'].value,
+			},
+			body: new URLSearchParams(new FormData(this)),
+		})
+		.then(response => {
+			if (!response.ok) {
+				throw new Error('Network response was not ok');
+			}
+			return response.json();
+		})
+		.then(data => {
+			if (data.error) {
+				alert(data.error);  // Display error message as a pop-up
+			} else {
+				window.location.href = "{% url 'accept_rules' %}";
+			}
+		})
+		.catch(error => {
+			console.error('Error:', error);
+		});
+	});
+</script>
+
+
 </html>

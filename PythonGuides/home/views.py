@@ -11,10 +11,12 @@ import json
 from datetime import datetime
 from django.core.mail import send_mail
 from PythonGuides.settings import EMAIL_HOST_USER
+import os
+from django.conf import settings
 
 def navbar(request):
     if request.method == 'POST':
-        username = (request.session['username'])
+        username = (request.session['cust_username'])
         print(username)
         # udata = UsersCurrentAddress.objects.get(username = username)
         key = settings.GOOGLE_API_KEY
@@ -42,10 +44,15 @@ def navbar(request):
             locations.append(data)
 
             print(locations)
+            # instance_ip_or_domain = settings.instance_ip_or_domain
+            instance_ip_or_domain = os.environ.get('INSTANCE_IP_OR_DOMAIN', '127.0.0.1')
         context = {
             "key": key, 
            "locations": locations,
-            "address" : address, 
+            "address" : address,
+            'instance_ip_or_domain':instance_ip_or_domain
+            
+             
             }
             
         return render(request, 'customer_map.html', context=context)
@@ -70,7 +77,7 @@ def signup(request):
                 
                 return HttpResponse('User already exits')
             else:
-                data = UsersCustomer(name=name,username=username,email=email,mobile=phone,password= encryptpass)
+                data = UsersCustomer(name=name,username=username,email=email,mobile=phone,password= encryptpass,cust_email_verified = '0')
                 data.save()
                 ldata = UsersCurrentAddress(username=username)
                 ldata.save()
@@ -78,7 +85,7 @@ def signup(request):
                 issue.save()
                 profil = Profile(cust_username=username,rating = 5,phone=phone,no_of_bookings = 0,cust_name = name)
                 profil.save()
-                request.session['username'] = username
+                request.session['cust_username'] = username
                 return redirect('otp')
         else:
             return render(request, 'login_final.html')
@@ -92,7 +99,7 @@ def forgot_password(request):
         p1 = request.POST.get('p1', '')
         p2 = request.POST.get('p2', '')
         if(p1 == p2):
-            request.session['username'] = username
+            request.session['cust_username'] = username
             request.session['newp'] = p1
             return redirect ('otp_forgot_passwd')
     return render(request, 'forgot_password.html')  
@@ -110,7 +117,7 @@ def otp_forgot_passwd(request):
 
         entered_otp = f"{otp1}{otp2}{otp3}{otp4}"
         if (int(entered_otp) == int(num)):
-            dat = UsersCustomer.objects.get(username = request.session['username'])
+            dat = UsersCustomer.objects.get(username = request.session['cust_username'])
             encryptpass= encrypt(request.session['newp'])
             dat.password = encryptpass
             dat.save()
@@ -120,7 +127,7 @@ def otp_forgot_passwd(request):
             messages.success(request, 'OTP not verified successfully!')
             return HttpResponse('invalid Otp')
     else:
-        mail = UsersCustomer.objects.get(username = request.session['username'])
+        mail = UsersCustomer.objects.get(username = request.session['cust_username'])
         num = random.randrange(1000,9999)
         subject = ''' Hello,
  
@@ -135,7 +142,7 @@ Enjoy the app!
  
 ResQify's team'''
         send_mail('Your One Time Passcode for ResQify',subject.format(num),EMAIL_HOST_USER,[mail.email],fail_silently=True)
-        return  render(request,"forgot_password_otp.html")
+        return  render(request,"forgot_passwrd_otp.html")
             
 
 
@@ -143,14 +150,20 @@ def login(request):
     if request.method == "POST":
         username = request.POST['username'] 
         try:
-            verify = UsersCustomer.objects.get(username = username)
+            verify = UsersCustomer.objects.get(username = username,cust_email_verified = '1')
             password = request.POST['password']
             print(verify.username)
             decrypted = decrypt(verify.password)
+            
             if(decrypted == password):
-                request.session['name'] = verify.name
-                request.session['username'] = verify.username
-                return JsonResponse({'success': True})
+                request.session['cust_name'] = verify.name
+                request.session['cust_username'] = verify.username
+                
+                # instance = settings.instance_ip_or_domain
+                instance_ip_or_domain = os.environ.get('INSTANCE_IP_OR_DOMAIN', '127.0.0.1')
+                print('instance_ip_or_domain',instance_ip_or_domain)
+                context = {'instance_ip_or_domain':instance_ip_or_domain}
+                return render(request,'accept_rules.html',context= context)
             else:
                 return JsonResponse({'error': 'Invalid username or password'})
         except:
@@ -158,14 +171,14 @@ def login(request):
         # if (verify == username):
         #     print(username)
         
-    return render(request,"login_final.html")
+    return render(request,"loginSignup.html")
 
 def logout_cust(request):
-    if 'username' in request.session:
-        del request.session['username']
+    if 'cust_username' in request.session:
+        del request.session['cust_username']
         
-    if 'name' in request.session:
-        del request.session['name']
+    if 'cust_name' in request.session:
+        del request.session['cust_name']
     
     # You can perform additional logout actions here if needed
 
@@ -186,13 +199,14 @@ def save_location(request):
             print(latitude)
             print(longitude)
             print("post req ")
-            username = (request.session['username'])
+            username = (request.session['cust_username'])
             print("save location call")
             # idata = UsersCurrentAddress(username=username,lat = latitude,lng = longitude)
             # idata.save()
             udata = UsersCurrentAddress.objects.get(username = username)
             udata.lat = latitude
             udata.lng = longitude
+            print(latitude)
             udata.save()
             # if (UsersCustomer.objects.filter(username =username).exists() == True):
       
@@ -210,11 +224,13 @@ def save_location(request):
                 }
 
                 locations.append(data)
-
+            # instance_ip_or_domain = settings.instance_ip_or_domain
+                instance_ip_or_domain = os.environ.get('INSTANCE_IP_OR_DOMAIN', '127.0.0.1')
             print(locations)
             context = {
                 "key": key, 
-                "locations": locations
+                "locations": locations,
+                'instance_ip_or_domain': instance_ip_or_domain
             }
             
             return render(request, 'customer_map.html', context)
@@ -229,7 +245,7 @@ def save_location(request):
 
 def BookMechanic(request):
     if request.method == 'POST':
-        username = request.session['username']
+        username = request.session['cust_username']
         Address = request.POST['Address']
         City = request.POST['City']
         ZipCode = request.POST['ZipCode']
@@ -274,7 +290,7 @@ def BookMechanic(request):
         #     return HttpResponse("No address found")
 
 def loc(request):
-    return render(request,"passwardchange.html") 
+    return render(request,"forgotpass.html") 
 
 import random
 
@@ -282,7 +298,7 @@ import random
 
 def vehicle_details(request):
     if request.method == 'POST':
-        username = request.session['username']
+        username = request.session['cust_username']
         print(username)
         vehicleType = request.POST['vehicleType']
         issuetype = request.POST['issueType']
@@ -327,7 +343,7 @@ def vehicle_details(request):
             undata.issue_status_id = '0' # 0 for not booked 1 for booked 
             print("except called")
             undata.save()
-        username = (request.session['username'])
+        username = (request.session['cust_username'])
         print(username)
             # idata = UsersCurrentAddress(username=username,lat = latitude,lng = longitude)
             # idata.save()
@@ -352,9 +368,13 @@ def vehicle_details(request):
             locations.append(data)
 
             print(locations)
+        # instance_ip_or_domain = settings.instance_ip_or_domain
+            instance_ip_or_domain = os.environ.get('INSTANCE_IP_OR_DOMAIN', '127.0.0.1')
         context = {
                 "key": key, 
-                "locations": locations
+                "locations": locations,
+                'instance_ip_or_domain': instance_ip_or_domain
+
         }
             
         return render(request, 'loading_bar.html', context)
@@ -368,7 +388,7 @@ def accept_rules(request):
 
 
 def check_mechanic(request):
-    cust_username = request.session['username']
+    cust_username = request.session['cust_username']
     status = Booking_status.objects.get(cust_username = cust_username )
     print(cust_username)
     booked = status.mech_assigned
@@ -387,62 +407,82 @@ def mech_booked(request):
     return render(request,"accept_rules.html") 
 
 def profile(request):
-    profile = Profile.objects.get(cust_username =request.session['username'] )
+    profile = Profile.objects.get(cust_username =request.session['cust_username'] )
     
     return render(request,"profile.html",{'phone' : profile.phone, 'rating' : profile.rating,'no_of_bookings':profile.no_of_bookings,'cust_name':profile.cust_name})
 
 
-def waiting_page(request):
-    cust_username = request.session['username']
+def check_booking_status(request):
+    cust_username = request.session['cust_username']
     status = Booking_status.objects.get(cust_username = cust_username )
-    mech_username = status.mech_username
-    mech_name = status.mech_name
-    cust_lat = status.cust_lat
-    cust_lng = status.cust_lng
-    mech_lat = status.mech_lat
-    mech_lng = status.mech_lng
-    duration_seconds = status.duration_seconds 
-    key = settings.GOOGLE_API_KEY
-    duration_kilometers = status.duration_kilometers
-    mech = UsersMechanic.objects.get(username= mech_username)
-    mech_add = MechanicDetails.objects.get(username = mech_username)
-    locations = []
-    data = {
-        'cust_lat':float(cust_lat),
-        'cust_lng':float(cust_lng),
-        'mech_lat':float(mech_lat),
-        'mech_lng':float(mech_lng)
-    }
-    print(cust_lat)
-    locations.append(data)
-    return render(request,'waiting_page.html',
-                  {'card_data':mech_username,
-                   'cust_name':mech_name,
-                   'key':key,'duration_minutes':duration_seconds,
-                   'distance_kilometers':duration_kilometers,
-                   'locations' :locations,
-                   'phone' : mech.mobile,
-                   'address': mech_add.mech_Address,
-                   'duration_seconds':duration_seconds,
-                   })
+    issue_resolved = False  
+    if(status.issue_resolved_status == '1'):
+        issue_resolved = True  
+        return JsonResponse({'issueResolved': issue_resolved})
+    return JsonResponse({'issueResolved': issue_resolved})
 
-# from .forms import FeedbackForm
+def waiting_page(request):
+    cust_username = request.session['cust_username']
+    status = Booking_status.objects.get(cust_username = cust_username )
+    if(status.issue_resolved_status == '0' and status.mech_assigned == '1'):
+        mech_username = status.mech_username
+        mech_name = status.mech_name
+        cust_lat = status.cust_lat
+        cust_lng = status.cust_lng
+        mech_lat = status.mech_lat
+        mech_lng = status.mech_lng
+        duration_seconds = status.duration_seconds
+        time_to_reach_minutes = (int(duration_seconds) // 60)
+        booking_time = status.booking_time
+        booking_time = datetime.strptime(booking_time, "%H:%M:%S")
+        current_time = datetime.now() 
+        customer_open_time = datetime.strptime(current_time.strftime('%H:%M:%S'), "%H:%M:%S")
+        time_difference = customer_open_time - booking_time
+        time_left_minutes = time_to_reach_minutes - time_difference.total_seconds() //60
+        if(time_left_minutes < 0):
+            time_left_minutes = 0
+            
+        key = settings.GOOGLE_API_KEY
+        duration_kilometers = status.duration_kilometers
+        mech = UsersMechanic.objects.get(username= mech_username)
+        mech_add = MechanicDetails.objects.get(username = mech_username)
+        locations = []
+        data = {
+            'cust_lat':float(cust_lat),
+            'cust_lng':float(cust_lng),
+            'mech_lat':float(mech_lat),
+            'mech_lng':float(mech_lng)
+        }
+        print(cust_lat)
+        locations.append(data)
+        # instance_ip_or_domain = settings.instance_ip_or_domain
+        instance_ip_or_domain = os.environ.get('INSTANCE_IP_OR_DOMAIN', '127.0.0.1')
+
+        return render(request,'waiting_page.html',
+                    {'card_data':mech_username,
+                    'mech_name':mech_name,
+                    'key':key,'duration_minutes':time_left_minutes * 60,
+                    'distance_kilometers':duration_kilometers,
+                    'locations' :locations,
+                    'phone' : mech.mobile,
+                    'address': mech_add.mech_Address,
+                    'instance_ip_or_domain': instance_ip_or_domain
+                    
+                    })
+    else:
+        return render(request,"no_ongoing.html")
+
+from .forms import FeedbackForm
 def feedback(request):
     if request.method == 'POST':
-        cust_username = request.session['username']
+        cust_username = request.session['cust_username']
         status = Booking_status.objects.get(cust_username = cust_username )
-        feedback_desc = request.POST.get('desc', '')
+        # feedback_desc = request.POST.get('desc', '')
         
-        # try:
-        #     star1 = request.POST["star1"]
-        #     rating = 1
-        # except:
-        #     star2 = request.POST["star2"]
-        #     rating = 2
-        rating = 4
+        form = FeedbackForm(request.POST)
         
-        feed = Feedback(issueid = status.issueid,desc = feedback_desc,rating = rating,cust_name= status.cust_name,cust_username= status.cust_username,mech_name = status.mech_name ,mech_username= status.mech_username)
-        feed.save()
+        if form.is_valid():
+            form.save()
         status.issue_resolved_status = 1
         status.mech_assigned = 0
         status.save()
@@ -452,7 +492,11 @@ def feedback(request):
         issue = UsersCurrentAddress.objects.get(username = cust_username)
         booking.issue_desc = issue.issuedesc
         booking.save()   
-        profile = Profile.objects.get(mech_username = status.mech_username )
+        no_of_bookings = Profile.objects.get(cust_username = cust_username)
+        b = int(no_of_bookings.no_of_bookings)
+        b += 1
+        no_of_bookings.save()
+        profile = Profile_mechanic.objects.get(mech_username = status.mech_username )
         profile.rating = 4
 
         profile.save()
@@ -466,7 +510,7 @@ def home_page(request):
     return render(request,"landing_page.html") 
 
 def Booking_histroy(request):
-    cust_username = request.session['username']
+    cust_username = request.session['cust_username']
     bookings = []
     book_data = Bookings.objects.filter(cust_username = cust_username)
     for i in book_data:
@@ -488,15 +532,23 @@ no = 0
 def otp(request):
     global no
     if request.method == 'POST':
-        otp = request.POST.get('otp', '')
-        if (int(otp) == int(no)):
+        otp1 = request.POST.get('otp1')
+        otp2 = request.POST.get('otp2')
+        otp3 = request.POST.get('otp3')
+        otp4 = request.POST.get('otp4')
+
+        entered_otp = f"{otp1}{otp2}{otp3}{otp4}"
+        if (int(entered_otp) == int(no)):
             messages.success(request, 'OTP verified successfully!')
+            email_status = UsersCustomer.objects.get(username = request.session['cust_username'])
+            email_status.cust_email_verified = '1'
+            email_status.save()
             return redirect('login')
         else:
             messages.success(request, 'OTP verified successfully!')
             return HttpResponse('invalid')
     else:
-        mail = UsersCustomer.objects.get(username = request.session['username'])
+        mail = UsersCustomer.objects.get(username = request.session['cust_username'])
         no = random.randrange(1000,9999)
         subject = ''' Hello,
  

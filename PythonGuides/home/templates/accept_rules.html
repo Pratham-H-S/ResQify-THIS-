@@ -85,9 +85,10 @@
           function showPosition(position) {
                x.innerHTML = "Latitude: " + position.coords.latitude +
                  "<br>Longitude: " + position.coords.longitude;
-    
+
               // Send data to Django backend
-              fetch('http://127.0.0.1:8000/save_location', {
+              const instanceIPorDomain = "{{ instance_ip_or_domain }}";
+              fetch(`http://${instanceIPorDomain}:8001/save_location`, {
                   method: 'POST',
                   headers: {
                       'Content-Type': 'application/json',

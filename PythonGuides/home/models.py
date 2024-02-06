@@ -7,12 +7,13 @@ class EmpLogin(models.Model):
     class Meta:
         db_table="EmpLogin"
 
-class UsersCustomer(models.Model):
+class UsersCustomer(models.Model):  
     name = models.CharField(max_length=500)
     username = models.CharField(max_length=100)
     mobile = models.CharField(max_length=100)
     email = models.EmailField(max_length = 254)
     password = models.CharField(max_length=50)
+    cust_email_verified = models.CharField(max_length=50,blank=True, null=True)
     class Meta:
         db_table="UsersCustomer"
 
@@ -50,21 +51,21 @@ class UsersCurrentAddress(models.Model):
 class Feedback(models.Model):
     issueid = models.CharField(max_length=1000,blank=True, null=True)
     desc = models.CharField(max_length=5000,blank=True, null=True)
-    rating = models.CharField(max_length=200,blank=True, null=True)
+    
     cust_name = models.CharField(max_length=500,blank=True, null=True)
     cust_username = models.CharField(max_length=500,blank=True, null=True)
     mech_name = models.CharField(max_length=500,blank=True, null=True)
     mech_username = models.CharField(max_length=500,blank=True, null=True)
-    # RATING_CHOICES = (
-    #     (1, 'Poor'),
-    #     (2, 'Below Average'),
-    #     (3, 'Average'),
-    #     (4, 'Good'),
-    #     (5, 'Excellent'),
-    # )
+    RATING_CHOICES = (
+        (1, 'Poor'),
+        (2, 'Below Average'),
+        (3, 'Average'),
+        (4, 'Good'),
+        (5, 'Excellent'),
+    )
 
-    # rating = models.IntegerField(choices=RATING_CHOICES)
-    # issue_description = models.TextField()
+    rating = models.IntegerField(choices=RATING_CHOICES,blank=True, null=True)
+    issue_description = models.TextField(max_length=5000,blank=True, null=True)
     class Meta:
         db_table="Feedback"
 

@@ -62,15 +62,20 @@ p {
     <div class="container">
         <h1>Bookings History</h1>
         <div class="card-container">
-            {% for booking in bookings %}
-            <div class="card">
-                <h2>{{ booking.mech_name }}</h2>
-                <p>Date: {{ booking.booking_date }}</p>
-                <p>Location: {{ booking.booking_time }}</p>
-                <p>Status: {{ booking.issue_desc }}</p>
-            </div>
-            {% endfor %}
+            {% if bookings %}
+                {% for booking in bookings %}
+                <div class="card">
+                    <h2>{{ booking.mech_name }}</h2>
+                    <p>Date: {{ booking.booking_date }}</p>
+                    <p>Location: {{ booking.booking_time }}</p>
+                    <p>Status: {{ booking.issue_desc }}</p>
+                </div>
+                {% endfor %}
+            {% else %}
+                <p>No Bookings Done</p>
+            {% endif %}
         </div>
+        
       
         <div class="card-container">
             <center>

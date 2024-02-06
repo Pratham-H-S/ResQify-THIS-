@@ -67,13 +67,21 @@
                 <div class="collapse navbar-collapse justify-content-end" id="navbarNav">
                     <ul class="navbar-nav">
                         <li class="nav-item">
-                            <a class="nav-link active" aria-current="page" href="#">Profile</a>
+                            <a class="nav-link active" aria-current="page" href="{% url 'mech_profile'  %}">Profile</a>
+                        </li>
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button"
+                                data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                Bookings
+                            </a>
+                            <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+                                <a class="dropdown-item" href="{% url 'ongoing_booking' %}">Ongoing</a>
+                                <a class="dropdown-item" href="{% url 'mech_bookings' %}">Completed</a>
+                                
+                            </div>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link" href="#">Bookings</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" href="#">LogOut <i class="fa-solid fa-arrow-right-from-bracket"
+                            <a class="nav-link" href="{% url 'logout_mech' %}">LogOut <i class="fa-solid fa-arrow-right-from-bracket"
                                     style="margin-left: 10px;"></i></a>
                         </li>
                     </ul>
@@ -90,7 +98,7 @@
     let map;
     let infoWindow = [];
     let locations = {{ locations|safe }};
-    
+    console.log("Instance IP or Domain:", "{{ instance_ip_or_domain }}");
     function initMap() {
         map = new google.maps.Map(document.getElementById("map"), {
             center: { lat:  12.9675955, lng: 77.5963159}, // Set initial center coordinates
@@ -102,9 +110,9 @@
         setInterval(updateMapData, 30000000);
         setInterval(renderCards, 30000);
     }
-    
+    const instanceIPorDomain = "{{ instance_ip_or_domain }}";
     function updateMapData() {
-        fetch('http://127.0.0.1:8000/mechanic/update_map')  // Replace with the actual URL to fetch updated data
+        fetch("http://{{instance_ip_or_domain|safe}}:8001/mechanic/update_map")  // Replace with the actual URL to fetch updated data
             .then(response => response.json())
             .then(data => {
                 locations = data;
@@ -147,7 +155,12 @@
                 return 'http://maps.google.com/mapfiles/ms/icons/red-dot.png';
         }
     }
-    fetch('http://127.0.0.1:8000/mechanic/get_vehicle_data')
+  
+    
+    const url = `http://${instanceIPorDomain}:8001/mechanic/get_vehicle_data`;
+    console.log("Fetch URL:", url);
+
+    fetch(url)
             .then(response => response.json())
             .then(data => renderCards(data))
             .catch(error => console.error('Error fetching data:', error));
@@ -194,8 +207,8 @@
         function showPosition(position) {
             x.innerHTML = "Latitude: " + position;
   
-            // Send data to Django backend
-            fetch('http://127.0.0.1:8000/mechanic/process_request', {
+            const instanceIPorDomain = "{{ instance_ip_or_domain }}";
+            fetch("http://{{instance_ip_or_domain}}:8001/mechanic/process_request", {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -233,8 +246,10 @@
                 // Add other fields as needed
             };
         
-            // Send data to the backend using a POST request
-            fetch('http://127.0.0.1:8000/mechanic/process_request', {
+            // Send data to the backend using a POST request 
+            const instanceIPorDomain = "{{ instance_ip_or_domain }}";
+            console.log("Instance IP or Domain:", instanceIPorDomain);
+            fetch("http://{{instance_ip_or_domain}}:8001/mechanic/process_request", {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -312,6 +327,15 @@
         console.log("Current text: " + {{ locations|safe }});
     }
 </script>
+<script src="https://code.jquery.com/jquery-3.2.1.slim.min.js"
+integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN"
+crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/popper.js@1.12.9/dist/umd/popper.min.js"
+integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q"
+crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@4.0.0/dist/js/bootstrap.min.js"
+integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl"
+crossorigin="anonymous"></script>
  
 </body>
 

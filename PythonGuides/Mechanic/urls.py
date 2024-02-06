@@ -20,6 +20,8 @@ urlpatterns = [
     path('mech_unresolved',mech_unresolved,name='mech_unresolved'),
     path('mech_forgot_password',mech_forgot_password,name='mech_forgot_password'),
     path('mech_otp_forgot_passwd',mech_otp_forgot_passwd,name='mech_otp_forgot_passwd'),
+    path('ongoing_booking',ongoing_booking,name='ongoing_booking'),
+    path('verify_email_otp',verify_email_otp,name='verify_email_otp'),
 
 
     

@@ -166,8 +166,16 @@
                         <li class="nav-item">
                             <a class="nav-link active" aria-current="page" href="#">Profile</a>
                         </li>
-                        <li class="nav-item">
-                            <a class="nav-link" href="#">Bookings</a>
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button"
+                                data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                Bookings
+                            </a>
+                            <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+                                <a class="dropdown-item" href="{% url 'ongoing_booking' %}">Ongoing</a>
+                                <a class="dropdown-item" href="{% url 'mech_bookings' %}">Completed</a>
+                                
+                            </div>
                         </li>
                         <li class="nav-item">
                             <a class="nav-link" href="#">LogOut <i class="fa-solid fa-arrow-right-from-bracket"

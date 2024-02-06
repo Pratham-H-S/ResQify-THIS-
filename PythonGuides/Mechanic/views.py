@@ -25,18 +25,55 @@ def signup_mech(request):
                     
                     return HttpResponse('User already exits')
                 else:
-                    data = UsersMechanic(name=name,username=username,email=email,mobile=phone,password= encryptpass)
+                    data = UsersMechanic(name=name,username=username,email=email,mobile=phone,password= encryptpass,mech_email_verified = '0')
+                    request.session['username'] = username
                     data.save()
-                    form = mech_detailsModelForm()
                     profile = Profile_mechanic(mech_username=username,mech_name = name)
                     profile.no_of_bookings = 0
                     profile.save()
-                    return redirect('mech_details')
+                    return redirect('verify_email_otp')
                 
             else:
-                return render(request, 'login_final.html')
+                return render(request, 'Mechanic/loginSignup.html')
         
-    return render(request,'Mechanic/login_final.html')
+    return render(request,'Mechanic/loginSignup.html')
+
+
+global no
+no = 0
+def verify_email_otp(request):
+    global no
+    if request.method == 'POST':
+        otp1 = request.POST.get('otp1')
+        otp2 = request.POST.get('otp2')
+        otp3 = request.POST.get('otp3')
+        otp4 = request.POST.get('otp4')
+
+        entered_otp = f"{otp1}{otp2}{otp3}{otp4}"
+        if (int(entered_otp) == int(no)):
+            dat = UsersMechanic.objects.get(username = request.session['username'])
+            dat.mech_email_verified = '1'
+            dat.save()
+            return redirect('mech_details')
+        else:
+            return HttpResponse('invalid Otp')
+    else:
+        mail = UsersMechanic.objects.get(username = request.session['username'])
+        no = random.randrange(1000,9999)
+        subject = ''' Hello,
+ 
+{} is your one-time passcode (OTP) for the ResQify app.
+ 
+Use this OTP to verify your email address.
+ 
+The code was requested from the ResQify's App on google your device.It will be valid for 4 hours.
+ 
+ 
+Enjoy the app!
+ 
+ResQify's team'''
+        send_mail('Your One Time Passcode for ResQify',subject.format(no),EMAIL_HOST_USER,[mail.email],fail_silently=True)
+        return  render(request,"Mechanic/verify_email_otp.html")
 
 def mech_details(request):
     if request.method == 'POST':
@@ -69,7 +106,7 @@ def mech_login(request):
         username = request.POST['username']
         print(username)
         try:
-            verify = UsersMechanic.objects.get(username = username)
+            verify = UsersMechanic.objects.get(username = username,mech_email_verified = '1')
             password = request.POST['password']
             
             decrypted = decrypt(verify.password)
@@ -84,7 +121,7 @@ def mech_login(request):
             print(f"Exception: {e}")
             return HttpResponse("An error occurred during login.")
     
-    return render(request,'Mechanic/login_final.html')
+    return render(request,'Mechanic/loginSignup.html')
 
 def mech_forgot_password(request):
     if request.method == 'POST':
@@ -251,7 +288,7 @@ def next_page(request):
     # Your other view logic goes here
 
     return HttpResponse("Response from Django backend")
-
+import os
 def mech_dashboard(request):
             username = request.session['username']
             locations=[]
@@ -285,12 +322,15 @@ def mech_dashboard(request):
 
                 print(locations)
             
+            # instance_ip_or_domain = settings.instance_ip_or_domain
+                instance_ip_or_domain = os.environ.get('INSTANCE_IP_OR_DOMAIN', '127.0.0.1')
             context = {
                 "key": key, 
             "locations": locations,
                 
-                
+              'instance_ip_or_domain': instance_ip_or_domain
                 } 
+            print(instance_ip_or_domain)
             return render(request,'Mechanic/service-1.html',context=context)
 
 def display_info(request,username):
@@ -301,6 +341,7 @@ def display_info(request,username):
 
     from_adress_string = str(mech_address.mech_shop)+", "+str(mech_address.mech_Address)+", "+str(mech_address.mech_city)+", "+str(mech_address.mech_zipcode)
     add = UsersCurrentAddress.objects.get(username = cust_username)
+    request.session['issue_id'] = add.issueid
     username = UsersCustomer.objects.get(username = cust_username)
     mech_name = UsersMechanic.objects.get(username = mech_username )
     to_address = add.address
@@ -364,14 +405,14 @@ def display_info(request,username):
     status.booking_time = time
     status.booking_date = formatted_datetime
     status.save()
-    book = Bookings(cust_username = cust_username, mech_name= mech_name, booking_date =formatted_datetime, booking_time = time, issue_desc = add.issuedesc )
+    book = Bookings_mech(mech_username = mech_username, cust_username= cust_username, booking_date =formatted_datetime, booking_time = time, issue_desc = add.issuedesc )
     book.save()
     profile = Profile_mechanic.objects.get(mech_username = mech_username )
     val = int(profile.no_of_bookings)
     val +=1
     profile.save()
     
-    return render(request,'Mechanic/s.html',
+    return render(request,'Mechanic/ongoing_issue.html',
                   {'card_data':cust_username,
                    'cust_name':username.name ,
                    'key':key,'duration_minutes':duration_minutes,
@@ -383,6 +424,56 @@ def display_info(request,username):
                    })
     # return render(request,"Mechanic/resolved_page.html")
     # return HttpResponse("hekk",vehicle_number)
+
+def ongoing_booking(request):
+    status = Booking_status.objects.get(issueid = request.session['issue_id'])
+    cust_username = status.cust_username
+    if(status.issue_resolved_status == '0'):
+        cust_name = status.cust_name
+        cust_lat = status.cust_lat
+        cust_lng = status.cust_lng
+        mech_lat = status.mech_lat
+        mech_lng = status.mech_lng
+        duration_seconds = status.duration_seconds
+        time_to_reach_minutes = (int(duration_seconds) // 60)
+        booking_time = status.booking_time
+        booking_time = datetime.strptime(booking_time, "%H:%M:%S")
+        current_time = datetime.now() 
+        customer_open_time = datetime.strptime(current_time.strftime('%H:%M:%S'), "%H:%M:%S")
+        time_difference = customer_open_time - booking_time
+        time_left_minutes = time_to_reach_minutes - time_difference.total_seconds() //60
+        if(time_left_minutes < 0):
+            time_left_minutes = 0
+            
+        key = settings.GOOGLE_API_KEY
+        duration_kilometers = status.duration_kilometers
+        cust_mobile = UsersCustomer.objects.get(username = cust_username)
+        cust_mobile = cust_mobile.mobile
+        cust_address = UsersCurrentAddress.objects.get(username = cust_username)
+
+        locations = []
+        data = {
+            'cust_lat':float(cust_lat),
+            'cust_lng':float(cust_lng),
+            'mech_lat':float(mech_lat),
+            'mech_lng':float(mech_lng)
+        }
+        print(cust_lat)
+        locations.append(data)
+        return render(request,'Mechanic/ongoing_issue.html',
+                    {
+                    'cust_name':cust_name,
+                    'key':key,'duration_minutes':time_left_minutes * 60,
+                    'distance_kilometers':duration_kilometers,
+                    'locations' :locations,
+                    'phone' : cust_mobile,
+                    'address': cust_address.address,
+                    
+                    })
+    else:
+        return render(request,'Mechanic/no_ongoing.html')
+
+
 def logout_mech(request):
     if 'username' in request.session:
         del request.session['username']
@@ -426,7 +517,7 @@ def mech_feedback(request):
 
 def mech_resolved(request):
     if request.method == 'POST':
-        status = Booking_status.objects.get(mech_username = request.session['username'] )
+        status = Booking_status.objects.get(mech_username = request.session['username'] ,issue_resolved_status = 0 )
         print(status)
         status.issue_resolved_status = '1'
         ustatus = UsersCurrentAddress.objects.get(username = status.cust_username)
@@ -446,4 +537,18 @@ def mech_unresolved(request):
     return  redirect('home_page')
 
 def mech_bookings(request):
-    return render(request,"Mechanic/service-1.html")
+    mech_username = request.session['username']
+    bookings = []
+    book_data = Bookings_mech.objects.filter(mech_username = mech_username)
+    for i in book_data:
+        
+        data = {
+            "booking_time" : i.booking_time,
+            "booking_date" : i.booking_date,
+            "mech_name" : i.cust_username,
+            
+            "issue_desc" : i.issue_desc 
+        }
+        bookings.append(data)
+
+    return render(request,"Mechanic/Bookings.html",{"bookings":bookings})

@@ -108,7 +108,7 @@
         </div>
         
         <div class="form-content">
-            <form id="otpVerificationForm" method="post" action="{% url 'otp_forgot_passwd' %}">
+            <form id="otpVerificationForm" method="post" action="{% url 'verify_email_otp' %}">
                 {% csrf_token %}
                 <label for="otp"><b>Enter OTP:</b></label>
                 <!-- Four input boxes for OTP -->

@@ -1,0 +1,172 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link rel="stylesheet" href="{% static 'loginSignup.css' %}">
+</head>
+<body>
+  <div id="container" class="container">
+		<!-- FORM SECTION -->
+		
+		<div class="row">
+			<!-- SIGN UP -->
+			
+			<div class="col align-items-center flex-col sign-up">
+				<div class="form-wrapper align-items-center">
+					<div class="form sign-up">
+						<form method="post" action="{% url 'signup_mech' %}" >
+							{% csrf_token %}
+						<div class="input-group">
+							<i class='bx bxs-user'></i>
+							<input type="text" placeholder="Name" name="name">
+						</div>
+						<div class="input-group">
+							<i class='bx bxs-user'></i>
+							<input type="text" placeholder="Username" name="username">
+						</div>
+            <div class="input-group">
+							<i class='bx bx-mail-send'></i>
+							<input type="tel" placeholder="Mobile number" maxlength="10" name="phone">
+						</div>
+						<div class="input-group">
+							<i class='bx bx-mail-send'></i>
+							<input type="email" placeholder="Email" name="email">
+						</div>
+						<div class="input-group">
+							<i class='bx bxs-lock-alt'></i>
+							<input type="password" placeholder="Password" name="pass1">
+						</div>
+						<div class="input-group">
+							<i class='bx bxs-lock-alt'></i>
+							<input type="password" placeholder="Confirm password" name="pass2" >
+						</div>
+						<button>
+							Sign up
+						</button>
+						<p>
+							<span>
+								Already have an account?
+							</span>
+							<b onclick="toggle()" class="pointer">
+								<b>Sign in here
+                </b></b>
+						</p>
+					</form>
+					</div>
+					
+
+				</div>
+			
+			</div>
+			
+			<!-- END SIGN UP -->
+			<!-- SIGN IN -->
+			
+			<div class="col align-items-center flex-col sign-in">
+				<div class="form-wrapper align-items-center">
+					
+					<div class="form sign-in" >
+						<form method="post" action="{% url 'mech_login' %}" >
+							{% csrf_token %}
+						<div class="input-group">
+							<i class='bx bxs-user'></i>
+							<input type="text" placeholder="Username" name="username">
+						</div>
+						<div class="input-group">
+							<i class='bx bxs-lock-alt'></i>
+							<input type="password" placeholder="Password" name="password">
+						</div>
+						<button>
+							Sign in
+						</button>
+						<p class="forgot-pass"><a href="{% url 'mech_forgot_password' %}" style="text-decoration: none;"><b>Forgot password?</b></a></p>
+						<p>
+							<span>
+								Don't have an account?
+							</span>
+							<b onclick="toggle()" class="pointer">
+								Sign up here
+							</b>
+						</p>
+						</form>
+					</div>
+				
+				</div>
+				<div class="form-wrapper">
+		
+				</div>
+			</div>
+		
+			<!-- END SIGN IN -->
+		</div>
+		<!-- END FORM SECTION -->
+		<!-- CONTENT SECTION -->
+		<div class="row content-row">
+			<!-- SIGN IN CONTENT -->
+			<div class="col align-items-center flex-col">
+				<div class="text sign-in">
+					<h2>
+						Welcome Mechanic
+					</h2>
+	
+				</div>
+				<div class="img sign-in">
+		
+				</div>
+			</div>
+			<!-- END SIGN IN CONTENT -->
+			<!-- SIGN UP CONTENT -->
+			<div class="col align-items-center flex-col">
+				<div class="img sign-up">
+				
+				</div>
+				<div class="text sign-up">
+					<h2>
+						Join with us
+					</h2>
+	
+				</div>
+			</div>
+			<!-- END SIGN UP CONTENT -->
+		</div>
+		<!-- END CONTENT SECTION -->
+	</div>
+
+      <script src="{% static 'loginSignup.js' %}"></script>
+</body>
+<script>
+	document.getElementById('loginForm').addEventListener('submit', function (event) {
+		event.preventDefault();
+
+		fetch(this.action, {
+			method: this.method,
+			headers: {
+				'Content-Type': 'application/x-www-form-urlencoded',
+				'X-CSRFToken': this.elements['csrfmiddlewaretoken'].value,
+			},
+			body: new URLSearchParams(new FormData(this)),
+		})
+		.then(response => {
+			if (!response.ok) {
+				throw new Error('Network response was not ok');
+			}
+			return response.json();
+		})
+		.then(data => {
+			if (data.error) {
+				alert(data.error);  // Display error message as a pop-up
+			} else {
+				window.location.href = "{% url 'accept_rules' %}";
+			}
+		})
+		.catch(error => {
+			console.error('Error:', error);
+		});
+	});
+</script>
+
+
+</html>

@@ -1,0 +1,114 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
+    <title>Forgot Password</title>
+    <style>
+        body {
+    font-family: Arial, sans-serif;
+    /* background-color: transparent; */
+    margin: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 100vh;
+    background-size: 100vw 100vh;
+    background-repeat: no-repeat;
+    background-image:url('{% static '/images/thisroad.jpg' %}');
+    
+    
+}
+
+.container {
+    border: 1px solid rgb(113, 189, 163);
+    background-color: transparent;
+    padding: 40px; /* Increase the padding for a larger container */
+    border-radius: 20px; /* Increase the border-radius for rounded edges */
+    box-shadow: 0 0 15px rgba(240, 236, 236, 0.1);
+    color: #fff;
+}
+
+
+form {
+    max-width: 400px;
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    
+}
+
+
+
+label {
+    margin-bottom: 5px;
+}
+
+input {
+    width: 100%;
+    padding: 8px;
+    margin-bottom: 16px;
+    box-sizing: border-box;
+}
+
+button {
+    background-color: #007bff;
+    color: #fff;
+    padding: 12px;
+    border: none;
+    border-radius: 3px;
+    cursor: pointer;
+}
+
+button:hover {
+    background-color: #0056b3;
+}
+h2{
+    color: aliceblue;
+    margin-top: -5px;
+}
+
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <form method="post" action="{% url 'forgot_password' %}">
+            {% csrf_token %}
+            <h2>Forgot Password</h2>
+            
+            <label for="username">Username:</label>
+            <input type="text" id="username" name="username" required>
+
+            <label for="newPassword">New Password:</label>
+            <input type="password" id="newPassword" name="p1" required>
+
+            <label for="confirmPassword">Confirm Password:</label>
+            <input type="password" id="confirmPassword" name="p2" required>
+
+            <button type="button" >Reset Password</button>
+        </form>
+    </div>
+
+    <script> 
+    function resetPassword() {
+    var username = document.getElementById("username").value;
+    var newPassword = document.getElementById("newPassword").value;
+    var confirmPassword = document.getElementById("confirmPassword").value;
+
+    // Perform validation
+    if (newPassword !== confirmPassword) {
+        alert("Passwords do not match. Please try again.");
+        return;
+    }
+
+    // Here, you would typically make an AJAX request to the server to handle password reset.
+    // For this example, we will just display an alert.
+    
+}
+
+    </script>
+</body>
+</html>

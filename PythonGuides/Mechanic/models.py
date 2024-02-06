@@ -8,6 +8,7 @@ class UsersMechanic(models.Model):
     username = models.CharField(max_length=100)
     mobile = models.CharField(max_length=100)
     email = models.EmailField(max_length = 254)
+    mech_email_verified = models.CharField(max_length=200,blank=True, null=True)
     password = models.CharField(max_length=50)
     class Meta:
         db_table="UsersMechanic"
@@ -50,6 +51,17 @@ class Profile_mechanic(models.Model):
     mech_username = models.CharField(max_length=500,blank=True, null=True)
     class Meta:
         db_table="Profile_mechanic"
+
+class Bookings_mech(models.Model):
+    mech_username =models.CharField(max_length=500,blank=True, null=True) 
+    cust_username =models.CharField(max_length=500,blank=True, null=True)  
+
+    booking_date = models.CharField(max_length=200,blank=True, null=True)
+    booking_time = models.CharField(max_length=200,blank=True, null=True)
+    issue_desc = models.CharField(max_length=2000,blank=True, null=True)
+
+    class Meta:
+        db_table="Bookings_mech"
 
 # class central_status_manager(models.Model):
 #     cust_username = models.CharField(max_length=500,blank=True, null=True)

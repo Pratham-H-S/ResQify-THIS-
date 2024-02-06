@@ -1,3 +1,4 @@
+{% load static %}
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -13,29 +14,38 @@
             align-items: center;
             justify-content: center;
             height: 100vh;
-            background-color: #f5f5f5;
-            /* background-image: url(/IMAGES/mech1.jpg); */
+            background-color: #f9f9f9;
         }
 
         .form-container {
-            /* background-color: aquamarine; */
             box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
             border-radius: 8px;
             overflow: hidden;
-            width: 450px;
-            height: 600px;
+            width: 90%;
+            max-width: 450px;
+            background-color: #ffffff;
+            margin: 20px;
         }
 
         .form-header {
-            background-color: rgb(240, 239, 233);
-            color: #0c0b0b;
+            background-color: #65b9f1;
+            color: #ffffff;
             text-align: center;
             padding: 10px;
-           height: 40px;
+            height: 40px;
+        }
+
+        .timer-container {
+            text-align: center;
+            padding: 10px;
+            background-color: #ecf0f1;
         }
 
         .form-content {
-            padding: 5px;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
         }
 
         label {
@@ -45,54 +55,45 @@
         }
 
         input {
-            width: calc(100% - 16px);
+            width: 40px;
             padding: 10px;
-            margin-bottom: 20px;
+            margin: 0 5px;
             box-sizing: border-box;
-            border: 1px solid #ccc;
+            border: 1px solid #bdc3c7;
             border-radius: 4px;
+            text-align: center;
+            font-size: 16px;
         }
 
         button {
-            background-color: #0c0d0e;
-            color: #fff;
+            background-color: #43a5e6;
+            color: #ffffff;
             padding: 10px 15px;
             border: none;
             border-radius: 4px;
             cursor: pointer;
-            width: 100px;
+            width: 100%;
+            margin-top: 15px;
+            font-size: 16px;
         }
 
-        button:hover{
-background-color: #ccc;
-color: #0c0b0b;
--ms-text-size-adjust: auto;
+        button:hover {
+            background-color: #2691d8;
         }
-        section{
-            height: 80px;
-            width: 345px;
-            /* border: 1px solid black; */
+
+        #validate {
             display: flex;
-            align-items: center;
-            justify-content: space-around;
-        }
-        section aside{
-            height: 50px;
-            width: 50px;
-            /* border: 1px solid black; */
-            display: flex;
-            align-items: center;
             justify-content: center;
-            background-color: rgb(153, 243, 243);
-            border-radius: 15px;
-            box-shadow: 1px 1px ;
+            align-items: center;
+            flex-direction: column;
+            text-align: center;
+            margin-top: 20px;
         }
-        #validate{
-            display: flex;
-            /* justify-items: flex-start; */
-        }
-        #vali{
-            margin-left: 50px;
+
+        #vali a {
+            color: #3498db;
+            text-decoration: underline;
+            cursor: pointer;
         }
     </style>
 </head>
@@ -102,25 +103,56 @@ color: #0c0b0b;
         <div class="form-header">
             <h2>OTP Verification</h2>
         </div>
-        <p><b>OTP has been sent to your email.</b></p>
+        <center>
+            <p><b>OTP has been sent to your email.</b></p>
+        </center>
        
-       <br>
-        <!-- the mobile number which was entered at the signup page should be displayed at the otp page -->
-        <br>
+        <div class="timer-container">
+            <p id="timer">Time remaining: <span id="countdown"></span></p>
+        </div>
+        
         <div class="form-content">
             <form id="otpVerificationForm" method="post" action="{% url 'otp' %}">
                 {% csrf_token %}
                 <label for="otp"><b>Enter OTP:</b></label>
-                <input type="text" name="otp">
-                <button type="submit"> submit</button>
+                <div style="display: flex;">
+                    <input type="text" name="otp1" maxlength="1" pattern="\d" required>
+                    <input type="text" name="otp2" maxlength="1" pattern="\d" required>
+                    <input type="text" name="otp3" maxlength="1" pattern="\d" required>
+                    <input type="text" name="otp4" maxlength="1" pattern="\d" required>
+                </div>
+                <button type="submit">Submit</button>
             </form>
         </div>
         
-       
+        <div id="validate" style="display: none;">
+            <p id="vali">Time's up! <a href="#" onclick="refreshPage()">Click here</a> to refresh the page.</p>
+        </div>
    
     </div>
-   
 
+    <script>
+        var countdownTime = 300; // 5 minutes
+
+        function updateTimer() {
+            var minutes = Math.floor(countdownTime / 60);
+            var seconds = countdownTime % 60;
+            document.getElementById('countdown').innerText = `${minutes}m ${seconds}s`;
+
+            if (countdownTime <= 0) {
+                document.getElementById('validate').style.display = 'flex';
+                document.getElementById('form-content').style.display = 'none';
+            }
+
+            countdownTime--;
+        }
+
+        function refreshPage() {
+            location.reload();
+        }
+
+        setInterval(updateTimer, 1000);
+    </script>
 
 </body>
 </html>

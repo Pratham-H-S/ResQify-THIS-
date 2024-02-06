@@ -263,8 +263,10 @@
 </script>
 <script>
   // Use Fetch API to make a GET request to the Django backend
+ 
   function checkForMechanic(){
-    fetch('http://127.0.0.1:8000/check_mechanic')
+    const instanceIPorDomain = "{{ instance_ip_or_domain }}";
+    fetch("http://{{instance_ip_or_domain}}:8001/check_mechanic")
       .then(response => response.json())
       .then(data => {
           // Update HTML content dynamically
