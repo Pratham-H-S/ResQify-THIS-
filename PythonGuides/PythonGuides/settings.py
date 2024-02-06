@@ -27,7 +27,7 @@ EMAIL_USE_SSL = False
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-INSTANCE_IP_OR_DOMAIN = os.environ.get('INSTANCE_IP_OR_DOMAIN', '127.0.0.1')
+
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/4.2/howto/deployment/checklist/
@@ -102,7 +102,7 @@ DATABASES = {
         'NAME': 'ResQify',
         'USER': 'root',
         'PASSWORD': 'root',
-        'HOST': 'localhost',  # Set to the appropriate MySQL host
+        'HOST': 'mysql', # Set to the appropriate MySQL host
         'PORT': '3306',       # Set to the appropriate MySQL port
     }
 }

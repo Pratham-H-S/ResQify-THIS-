@@ -42,7 +42,7 @@ def navbar(request):
             locations.append(data)
 
             print(locations)
-            instance_ip_or_domain = os.environ.get('INSTANCE_IP_OR_DOMAIN', '127.0.0.1')
+            instance_ip_or_domain = '127.0.0.1'
         context = {
             "key": key, 
            "locations": locations,
@@ -155,7 +155,7 @@ def login(request):
             if(decrypted == password):
                 request.session['cust_name'] = verify.name
                 request.session['cust_username'] = verify.username
-                instance_ip_or_domain = os.environ.get('INSTANCE_IP_OR_DOMAIN', '127.0.0.1')
+                instance_ip_or_domain = '127.0.0.1'
                 context = {'instance_ip_or_domain':instance_ip_or_domain}
                 return render(request,'accept_rules.html',context= context)
             else:
@@ -218,7 +218,7 @@ def save_location(request):
                 }
 
                 locations.append(data)
-            instance_ip_or_domain = os.environ.get('INSTANCE_IP_OR_DOMAIN', '127.0.0.1')
+            instance_ip_or_domain = '127.0.0.1'
             print(locations)
             context = {
                 "key": key, 
@@ -361,7 +361,7 @@ def vehicle_details(request):
             locations.append(data)
 
             print(locations)
-        instance_ip_or_domain = os.environ.get('INSTANCE_IP_OR_DOMAIN', '127.0.0.1')
+        instance_ip_or_domain = '127.0.0.1'
         context = {
                 "key": key, 
                 "locations": locations,
@@ -447,7 +447,7 @@ def waiting_page(request):
         }
         print(cust_lat)
         locations.append(data)
-        instance_ip_or_domain = os.environ.get('INSTANCE_IP_OR_DOMAIN', '127.0.0.1')
+        instance_ip_or_domain = '127.0.0.1'
 
         return render(request,'waiting_page.html',
                     {'card_data':mech_username,

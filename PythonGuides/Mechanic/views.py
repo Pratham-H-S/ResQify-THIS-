@@ -322,7 +322,7 @@ def mech_dashboard(request):
 
                 print(locations)
             
-            instance_ip_or_domain = os.environ.get('INSTANCE_IP_OR_DOMAIN', '127.0.0.1')
+            instance_ip_or_domain = '127.0.0.1'
             context = {
                 "key": key, 
             "locations": locations,
