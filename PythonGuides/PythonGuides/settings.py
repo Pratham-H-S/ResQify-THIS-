@@ -99,11 +99,11 @@ ENCRYPT_KEY = b'tmzHcYuvLUhxjcxZ4k_iqfCx-HUq6PCvdbXr4vOC5B4='
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'ResQify',
-        'USER': 'root',
-        'PASSWORD': 'root',
-        'HOST': 'mysql', # Set to the appropriate MySQL host
-        'PORT': '3306',       # Set to the appropriate MySQL port
+        'NAME': 'django_testing', # Should match the MYSQL_DATABASE in docker-compose.yml
+        'USER': 'admin', # Should match the MYSQL_USER in docker-compose.yml
+        'PASSWORD': 'admin', # Should match the MYSQL_PASSWORD in docker-compose.yml
+        'HOST': 'mysql', # Should match the service name in docker-compose.yml
+        'PORT': '3306',      # Set to the appropriate MySQL port
     }
 }
 

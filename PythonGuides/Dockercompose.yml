@@ -18,7 +18,7 @@
 #       MYSQL_USER: user
 #       MYSQL_PASSWORD: password
 version: '3.8'
- 
+
 services:
   mysql:
     image: mysql:latest
@@ -28,24 +28,25 @@ services:
       - ./mysql:/var/lib/mysql
     environment:
       - MYSQL_ROOT_PASSWORD=root
-      - MYSQL_DATABASE=ResQify
-      - MYSQL_USER=root
-      - MYSQL_PASSWORD=root
+      - MYSQL_DATABASE=django_testing
+      - MYSQL_USER=admin
+      - MYSQL_PASSWORD=admin
     restart: always
- 
+
   django_app:
     build:
       context: .
     ports:
-      - "8002:8002"
+      - "8001:8001"
     environment:
-      SQLALCHEMY_DATABASE_URI: 'mysql://admin:admin@mysql/django_testing'
+      - SQLALCHEMY_DATABASE_URI=mysql://admin:admin@mysql/django_testing
     networks:
       - mynetwork
     depends_on:
       - mysql
-  
+
 networks:
   mynetwork:
     driver: bridge
+
 
