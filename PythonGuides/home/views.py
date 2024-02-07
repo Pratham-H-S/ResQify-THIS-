@@ -338,8 +338,8 @@ def vehicle_details(request):
             # idata = UsersCurrentAddress(username=username,lat = latitude,lng = longitude)
             # idata.save()
         udata = UsersCurrentAddress.objects.get(username = username)
-        latitude = udata.lat
-        longitude = udata.lng
+        latitude = float('12.920114')  
+        longitude = float('77.4995769')
         udata.save()
             # if (UsersCustomer.objects.filter(username =username).exists() == True):
       
