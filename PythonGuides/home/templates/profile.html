@@ -54,10 +54,11 @@
           
       </li>
   </ul>
-    <div class="content__button"><a class="button" href="#">
+    <div class="content__button"><a class="button" href = "{% url 'navbar' %}">
         <div class="button__border"></div>
         <div class="button__bg"></div>
-        <p class="button__text">Home</p></a></div>
+        <p class="button__text" >Home</p></a>
+      </div>
   </div>
   <div class="bg">
     <div><span></span><span></span><span></span><span></span><span></span><span></span><span></span>
@@ -79,10 +80,9 @@
 </div>
          <!-- END EDMO HTML (Happy Coding!)-->
       </main>
-      <footer class="cd__credit">Author: adrien - Distributed By: <a title="Free web design code & scripts" href="https://www.codehim.com?source=demo-page" target="_blank">CodeHim</a></footer>
       
       <!-- Script JS -->
-      <script src="{% static 'script.css' %}"></script>
+      <script src="{% static 'script.js' %}"></script>
       <!--$%analytics%$-->
    </body>
 </html>

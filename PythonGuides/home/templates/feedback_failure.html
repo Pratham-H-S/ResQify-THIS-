@@ -234,7 +234,7 @@
   <div class="feedback-container ">
         <h2>Feedback Form</h2>
         <div class="rating-section">
-        <form method="post" action="{% url 'feedback' %}">
+        <form method="post" action="{% url 'feedback_failure' %}">
             {% csrf_token %}
           
             <label for="{{ form.rating.id_for_label }}">Rating:</label>

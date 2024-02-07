@@ -17,10 +17,12 @@ urlpatterns = [
     path('profile',profile,name="profile"),
     path('waiting_page',waiting_page,name="waiting_page"),
     path('feedback',feedback,name="feedback"),
+    path('feedback_failure',feedback_failure,name="feedback_failure"),
     path('logout_cust',logout_cust,name="logout_cust"),
     path('Booking_histroy',Booking_histroy,name="Booking_histroy"),
     path('otp',otp,name="otp"),
     path('forgot_password',forgot_password,name="forgot_password"),
     path("otp_forgot_passwd",otp_forgot_passwd,name="otp_forgot_passwd"),
     path("check_booking_status",check_booking_status,name="check_booking_status"),
+    path("check_issues_status",check_issues_status,name="check_issues_status"),
 ]

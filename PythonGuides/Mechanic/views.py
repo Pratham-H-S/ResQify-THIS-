@@ -528,8 +528,8 @@ def mech_resolved(request):
 
 def mech_unresolved(request):
     if request.method == 'POST':
-        status = Booking_status.objects.get(mech_username = request.session['username'] )
-        status.issue_resolved_status = '0'
+        status = Booking_status.objects.get(mech_username = request.session['username']  ,issue_resolved_status = 0 )
+        status.issue_resolved_status = '2'
         ustatus = UsersCurrentAddress.objects.get(username = status.cust_username)
         ustatus.issue_status_id = '0'
         status.save()

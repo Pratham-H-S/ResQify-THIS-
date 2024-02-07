@@ -54,10 +54,12 @@ def navbar(request):
             
              
             }
+        request.session['context'] = context
             
         return render(request, 'customer_map.html', context=context)
-
-    return render(request, 'loading_bar.html')
+    else:
+        context =  request.session['context'] 
+        return render(request, 'customer_map.html', context=context)
 
 
 
@@ -419,6 +421,23 @@ def check_booking_status(request):
     if(status.issue_resolved_status == '1'):
         issue_resolved = True  
         return JsonResponse({'issueResolved': issue_resolved})
+    if(status.issue_resolved_status == '2'):
+        issue_resolved = False  
+        return JsonResponse({'issueResolved': issue_resolved})
+    
+    return JsonResponse({'issueResolved': issue_resolved})
+
+def check_issues_status(request):
+    cust_username = request.session['cust_username']
+    status = Booking_status.objects.get(cust_username = cust_username )
+    issue_resolved = 0  
+    if(status.issue_resolved_status == '1'):
+        issue_resolved = 1  
+        return JsonResponse({'issueResolved': issue_resolved})
+    if(status.issue_resolved_status == '2'):
+        issue_resolved = 2  
+        return JsonResponse({'issueResolved': issue_resolved})
+    
     return JsonResponse({'issueResolved': issue_resolved})
 
 def waiting_page(request):
@@ -480,9 +499,12 @@ def feedback(request):
         # feedback_desc = request.POST.get('desc', '')
         
         form = FeedbackForm(request.POST)
-        
-        if form.is_valid():
-            form.save()
+        rating = request.POST.get('rating')
+        issue_description = request.POST.get('issue_description')
+        print(rating)
+        print(issue_description)
+        # if form.is_valid():
+        #     form.save()
         status.issue_resolved_status = 1
         status.mech_assigned = 0
         status.save()
@@ -500,11 +522,51 @@ def feedback(request):
         profile.rating = 4
 
         profile.save()
-
+        feed = Feedback(issueid = issue.issueid,cust_username = cust_username,mech_username = status.mech_username,issue_description=issue_description,rating = rating )
+        feed.save()
         return redirect('home_page')
     else:
         form = FeedbackForm()
     return render(request,"feedback.html", {'form': form})
+
+def feedback_failure(request):
+    if request.method == 'POST':
+        cust_username = request.session['cust_username']
+        status = Booking_status.objects.get(cust_username = cust_username )
+        # feedback_desc = request.POST.get('desc', '')
+        
+        form = FeedbackForm(request.POST)
+        rating = request.POST.get('rating')
+        issue_description = request.POST.get('issue_description')
+        print(rating)
+        print(issue_description)
+        # if form.is_valid():
+        #     form.save()
+        status.issue_resolved_status = 0
+        status.mech_assigned = 0
+        status.save()
+        booking = Bookings(booking_time = status.booking_time,booking_date= status.booking_date,mech_name = status.mech_name ,cust_username =cust_username)
+        mech_phone = UsersMechanic.objects.get(username = status.mech_username)
+        booking.phone = mech_phone.mobile
+        issue = UsersCurrentAddress.objects.get(username = cust_username)
+        booking.issue_desc = issue.issuedesc
+        booking.save()   
+        no_of_bookings = Profile.objects.get(cust_username = cust_username)
+        b = int(no_of_bookings.no_of_bookings)
+        b += 1
+        no_of_bookings.save()
+        profile = Profile_mechanic.objects.get(mech_username = status.mech_username )
+        profile.rating = str(rating)
+
+        profile.save()
+        feed = Feedback(issueid = issue.issueid,cust_username = cust_username,mech_username = status.mech_username,issue_description=issue_description,rating = rating )
+        feed.save()
+        context = request.session['context'] 
+            
+        return render(request, 'customer_map.html', context=context)
+    else:
+        form = FeedbackForm()
+    return render(request,"feedback_failure.html", {'form': form})
 
 def home_page(request):
     return render(request,"landing_page.html") 

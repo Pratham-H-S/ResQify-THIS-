@@ -285,13 +285,19 @@
             google.maps.event.addDomListener(window, 'load', initMap);
             function checkIssueStatus() {
                 const instanceIPorDomain = "{{ instance_ip_or_domain }}";
-                fetch(`http://${instanceIPorDomain}:8001/check_booking_status`)
+                fetch(`http://${instanceIPorDomain}:8001/check_issues_status`)
                     .then(response => response.json())
                     .then(data => {
                         // Check if the issue is resolved
-                        if (data.issueResolved) {
+                        if (data.issueResolved === 1) {
                             // Redirect to the feedback page
                             window.location.href = '{% url "feedback" %}';
+                        }
+                    }).then(data => {
+                        // Check if the issue is resolved and equals 2
+                        if (data.issueResolved === 2) {
+                            // Redirect to the feedback page
+                            window.location.href = '{% url "feedback_failure" %}';
                         }
                     })
                     .catch(error => console.error('Error checking issue status:', error));
