@@ -275,6 +275,8 @@ def BookMechanic(request):
         udata = UsersCurrentAddress.objects.get(username = username)
         udata.lat = lat
         udata.lng = lng
+        udata.adress = adress_string
+        udata.save()
 
         return render(request,"issue_detailpage.html") 
        
