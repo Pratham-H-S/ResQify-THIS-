@@ -293,8 +293,6 @@
                             // Redirect to the feedback page
                             window.location.href = '{% url "feedback" %}';
                         }
-                    }).then(data => {
-                        // Check if the issue is resolved and equals 2
                         if (data.issueResolved === 2) {
                             // Redirect to the feedback page
                             window.location.href = '{% url "feedback_failure" %}';

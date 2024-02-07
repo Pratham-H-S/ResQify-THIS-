@@ -22,7 +22,7 @@ def navbar(request):
         key = settings.GOOGLE_API_KEY
             # eligable_locations = Locations.objects.filter(place_id__isnull=False)
         if UsersCustomer.objects.filter(username =username).exists():
-            udata = UsersCurrentAddress.objects.get(username = username)
+            udata = UsersCurrentAddress.objects.get(username = 't7')
             locations = []
             latitude = udata.lat
             longitude = udata.lng
@@ -198,7 +198,7 @@ def save_location(request):
             latitude = data.get('latitude')
             longitude = data.get('longitude')
             latitude = '12.920114'
-            longitude = '77.499575'
+            longitude = '77.4995769'
             lat = request.COOKIES.get("lat")
             long = request.COOKIES.get("long")
             print(latitude)
@@ -555,7 +555,7 @@ def Booking_histroy(request):
     bookings = []
     book_data = Bookings.objects.filter(cust_username = cust_username)
     for i in book_data:
-        
+        print("mech name ",i.mech_name)
         data = {
             "booking_time" : i.booking_time,
             "booking_date" : i.booking_date,
