@@ -166,6 +166,7 @@ def login(request):
                 print('instance_ip_or_domain',instance_ip_or_domain)
                 context = {'instance_ip_or_domain':instance_ip_or_domain}
                 return render(request,'accept_rules.html',context= context)
+                # return redirect('accept_rules')
             else:
                 return JsonResponse({'error': 'Invalid username or password'})
         except:
@@ -265,31 +266,7 @@ def BookMechanic(request):
         udata.lng = lng
 
         return render(request,"issue_detailpage.html") 
-        # Address = request.POST['Address']
-        # City = request.POST['City']
-        # ZipCode = request.POST['ZipCode']
-        # print(Address)
-        # adress_string = str(Address)+", "+str(ZipCode)+", "+str(City)+", "+"India"
-
-        # gmaps = googlemaps.Client(key = settings.GOOGLE_API_KEY)
-        # result = gmaps.geocode(adress_string)[0]    
-        # lat = result.get('geometry', {}).get('location', {}).get('lat', None)
-        # lng = result.get('geometry', {}).get('location', {}).get('lng', None)
-        # # print(lat)
-        # # print(lng)F
-        # # return HttpResponse("success")
-        # gmaps = googlemaps.Client(key=settings.GOOGLE_API_KEY)
-        # result = gmaps.reverse_geocode((lat, lng))
-
-        # if result:
-        #         # Assuming the first result is the most relevant one
-        #     address = result[0]['formatted_address']
-
-        #     print(f"Address: {address}")
-        #     return HttpResponse(address)
-        # else:
-        #     print("Reverse geocoding API did not return any results.")
-        #     return HttpResponse("No address found")
+       
 
 def loc(request):
     return render(request,"forgotpass.html") 
