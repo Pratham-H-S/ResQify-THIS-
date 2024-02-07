@@ -197,6 +197,8 @@ def save_location(request):
             data = json.loads(request.body)
             latitude = data.get('latitude')
             longitude = data.get('longitude')
+            latitude = '12.920114'
+            longitude = '77.499575'
             lat = request.COOKIES.get("lat")
             long = request.COOKIES.get("long")
             print(latitude)
