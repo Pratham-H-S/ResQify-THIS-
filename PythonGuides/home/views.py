@@ -210,10 +210,10 @@ def save_location(request):
             print("save location call")
             # idata = UsersCurrentAddress(username=username,lat = latitude,lng = longitude)
             # idata.save()
-            # udata = UsersCurrentAddress.objects.get(username = 't7')
+            udata = UsersCurrentAddress.objects.get(username = 't7')
             # locations = []
-            # latitude = udata.lat
-            # longitude = udata.lng
+            latitude = udata.lat
+            longitude = udata.lng
             udata = UsersCurrentAddress.objects.get(username = username)
             print(username)
             udata.lat = latitude
