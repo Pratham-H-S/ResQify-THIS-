@@ -138,7 +138,7 @@
       <script src="{% static 'loginSignup.js' %}"></script>
 </body>
 <script>
-	document.getElementById('loginForm').addEventListener('submit', function (event) {
+	document.getElementById('loginFor').addEventListener('submit', function (event) {
 		event.preventDefault();
 
 		fetch(this.action, {
@@ -158,9 +158,7 @@
 		.then(data => {
 			if (data.error) {
 				alert(data.error);  // Display error message as a pop-up
-			} else {
-				window.location.href = "{% url 'accept_rules' %}";
-			}
+			} 
 		})
 		.catch(error => {
 			console.error('Error:', error);

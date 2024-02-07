@@ -197,8 +197,10 @@ def save_location(request):
             data = json.loads(request.body)
             latitude = data.get('latitude')
             longitude = data.get('longitude')
-            latitude = '12.920114'
-            longitude = '77.4995769'
+            print(type(latitude))
+            latitude = float('12.920114')
+            
+            longitude = float('77.4995769')
             lat = request.COOKIES.get("lat")
             long = request.COOKIES.get("long")
             print(latitude)
@@ -208,9 +210,16 @@ def save_location(request):
             print("save location call")
             # idata = UsersCurrentAddress(username=username,lat = latitude,lng = longitude)
             # idata.save()
+            # udata = UsersCurrentAddress.objects.get(username = 't7')
+            # locations = []
+            # latitude = udata.lat
+            # longitude = udata.lng
             udata = UsersCurrentAddress.objects.get(username = username)
+            print(username)
             udata.lat = latitude
             udata.lng = longitude
+            print("latitude")
+            print(udata.lat)
             print(latitude)
             udata.save()
             # if (UsersCustomer.objects.filter(username =username).exists() == True):
