@@ -22,10 +22,10 @@ def navbar(request):
         key = settings.GOOGLE_API_KEY
             # eligable_locations = Locations.objects.filter(place_id__isnull=False)
         if UsersCustomer.objects.filter(username =username).exists():
-            udata = UsersCurrentAddress.objects.get(username = 't7')
+            udata = UsersCurrentAddress.objects.get(username = username)
             locations = []
-            latitude = udata.lat
-            longitude = udata.lng
+            latitude = float('12.920114')
+            longitude = float('77.4995769')
             gmaps = googlemaps.Client(key=settings.GOOGLE_API_KEY)
             result = gmaps.reverse_geocode((latitude, longitude))
             address = result[0]['formatted_address']
