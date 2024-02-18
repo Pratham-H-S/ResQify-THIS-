@@ -99,7 +99,7 @@ def mech_details(request):
          
    
 
-    return render(request,'Mechanic/loginSignup.html')
+    return render(request,'Mechanic/mech_details.html')
 
 def mech_login(request):
     if request.method == 'POST':
