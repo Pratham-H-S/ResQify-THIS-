@@ -322,7 +322,8 @@ def mech_dashboard(request):
 
                 print(locations)
             
-            instance_ip_or_domain = settings.instance_ip_or_domain
+            # instance_ip_or_domain = settings.instance_ip_or_domain
+                instance_ip_or_domain = os.environ.get('INSTANCE_IP_OR_DOMAIN', '0.0.0.0')
             context = {
                 "key": key, 
             "locations": locations,
@@ -404,7 +405,7 @@ def display_info(request,username):
     status.booking_time = time
     status.booking_date = formatted_datetime
     status.save()
-    book = mech_Bookings(mech_username = mech_username, cust_username= cust_username, booking_date =formatted_datetime, booking_time = time, issue_desc = add.issuedesc )
+    book = Bookings_mech(mech_username = mech_username, cust_username= cust_username, booking_date =formatted_datetime, booking_time = time, issue_desc = add.issuedesc )
     book.save()
     profile = Profile_mechanic.objects.get(mech_username = mech_username )
     val = int(profile.no_of_bookings)
@@ -527,8 +528,8 @@ def mech_resolved(request):
 
 def mech_unresolved(request):
     if request.method == 'POST':
-        status = Booking_status.objects.get(mech_username = request.session['username'] )
-        status.issue_resolved_status = '0'
+        status = Booking_status.objects.get(mech_username = request.session['username']  ,issue_resolved_status = 0 )
+        status.issue_resolved_status = '2'
         ustatus = UsersCurrentAddress.objects.get(username = status.cust_username)
         ustatus.issue_status_id = '0'
         status.save()
@@ -538,7 +539,7 @@ def mech_unresolved(request):
 def mech_bookings(request):
     mech_username = request.session['username']
     bookings = []
-    book_data = mech_Bookings.objects.filter(mech_username = mech_username)
+    book_data = Bookings_mech.objects.filter(mech_username = mech_username)
     for i in book_data:
         
         data = {
