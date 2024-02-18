@@ -15,7 +15,7 @@
     <div class="cont">
         <div class="form sign-in">
             <h2>Welcome</h2>
-            <form method="post" action="{% url 'login' %}" id="loginForm">
+            <form method="post" action="{% url 'login' %}" >
                 {% csrf_token %}
 
             <label>
