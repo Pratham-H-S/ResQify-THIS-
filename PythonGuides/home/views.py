@@ -12,6 +12,8 @@ from datetime import datetime
 from django.core.mail import send_mail
 from PythonGuides.settings import EMAIL_HOST_USER
 import os
+from django.conf import settings
+
 def navbar(request):
     if request.method == 'POST':
         username = (request.session['cust_username'])
@@ -20,7 +22,7 @@ def navbar(request):
         key = settings.GOOGLE_API_KEY
             # eligable_locations = Locations.objects.filter(place_id__isnull=False)
         if UsersCustomer.objects.filter(username =username).exists():
-            udata = UsersCurrentAddress.objects.get(username = username)
+            udata = UsersCurrentAddress.objects.get(username = 't7')
             locations = []
             latitude = udata.lat
             longitude = udata.lng
@@ -42,7 +44,8 @@ def navbar(request):
             locations.append(data)
 
             print(locations)
-            instance_ip_or_domain = settings.instance_ip_or_domain
+            # instance_ip_or_domain = settings.instance_ip_or_domain
+            instance_ip_or_domain = os.environ.get('INSTANCE_IP_OR_DOMAIN', '127.0.0.1')
         context = {
             "key": key, 
            "locations": locations,
@@ -51,10 +54,12 @@ def navbar(request):
             
              
             }
+        request.session['context'] = context
             
         return render(request, 'customer_map.html', context=context)
-
-    return render(request, 'loading_bar.html')
+    else:
+        context =  request.session['context'] 
+        return render(request, 'customer_map.html', context=context)
 
 
 
@@ -85,9 +90,9 @@ def signup(request):
                 request.session['cust_username'] = username
                 return redirect('otp')
         else:
-            return render(request, 'loginSignup.html')
+            return render(request, 'login_final.html')
   
-    return render(request, 'loginSignup.html')
+    return render(request, 'login_final.html')
 
 
 def forgot_password(request):
@@ -155,9 +160,13 @@ def login(request):
             if(decrypted == password):
                 request.session['cust_name'] = verify.name
                 request.session['cust_username'] = verify.username
-                instance_ip_or_domain = settings.instance_ip_or_domain
+                
+                # instance = settings.instance_ip_or_domain
+                instance_ip_or_domain = os.environ.get('INSTANCE_IP_OR_DOMAIN', '127.0.0.1')
+                print('instance_ip_or_domain',instance_ip_or_domain)
                 context = {'instance_ip_or_domain':instance_ip_or_domain}
                 return render(request,'accept_rules.html',context= context)
+                # return redirect('accept_rules')
             else:
                 return JsonResponse({'error': 'Invalid username or password'})
         except:
@@ -188,6 +197,10 @@ def save_location(request):
             data = json.loads(request.body)
             latitude = data.get('latitude')
             longitude = data.get('longitude')
+            print(type(latitude))
+            latitude = float('12.920114')
+            
+            longitude = float('77.4995769')
             lat = request.COOKIES.get("lat")
             long = request.COOKIES.get("long")
             print(latitude)
@@ -197,9 +210,16 @@ def save_location(request):
             print("save location call")
             # idata = UsersCurrentAddress(username=username,lat = latitude,lng = longitude)
             # idata.save()
+            udata = UsersCurrentAddress.objects.get(username = 't7')
+            # locations = []
+            latitude = udata.lat
+            longitude = udata.lng
             udata = UsersCurrentAddress.objects.get(username = username)
+            print(username)
             udata.lat = latitude
             udata.lng = longitude
+            print("latitude")
+            print(udata.lat)
             print(latitude)
             udata.save()
             # if (UsersCustomer.objects.filter(username =username).exists() == True):
@@ -218,7 +238,8 @@ def save_location(request):
                 }
 
                 locations.append(data)
-            instance_ip_or_domain = settings.instance_ip_or_domain
+            # instance_ip_or_domain = settings.instance_ip_or_domain
+                instance_ip_or_domain = os.environ.get('INSTANCE_IP_OR_DOMAIN', '0.0.0.0')
             print(locations)
             context = {
                 "key": key, 
@@ -254,33 +275,11 @@ def BookMechanic(request):
         udata = UsersCurrentAddress.objects.get(username = username)
         udata.lat = lat
         udata.lng = lng
+        udata.adress = adress_string
+        udata.save()
 
         return render(request,"issue_detailpage.html") 
-        # Address = request.POST['Address']
-        # City = request.POST['City']
-        # ZipCode = request.POST['ZipCode']
-        # print(Address)
-        # adress_string = str(Address)+", "+str(ZipCode)+", "+str(City)+", "+"India"
-
-        # gmaps = googlemaps.Client(key = settings.GOOGLE_API_KEY)
-        # result = gmaps.geocode(adress_string)[0]    
-        # lat = result.get('geometry', {}).get('location', {}).get('lat', None)
-        # lng = result.get('geometry', {}).get('location', {}).get('lng', None)
-        # # print(lat)
-        # # print(lng)F
-        # # return HttpResponse("success")
-        # gmaps = googlemaps.Client(key=settings.GOOGLE_API_KEY)
-        # result = gmaps.reverse_geocode((lat, lng))
-
-        # if result:
-        #         # Assuming the first result is the most relevant one
-        #     address = result[0]['formatted_address']
-
-        #     print(f"Address: {address}")
-        #     return HttpResponse(address)
-        # else:
-        #     print("Reverse geocoding API did not return any results.")
-        #     return HttpResponse("No address found")
+       
 
 def loc(request):
     return render(request,"forgotpass.html") 
@@ -341,8 +340,8 @@ def vehicle_details(request):
             # idata = UsersCurrentAddress(username=username,lat = latitude,lng = longitude)
             # idata.save()
         udata = UsersCurrentAddress.objects.get(username = username)
-        latitude = udata.lat
-        longitude = udata.lng
+        latitude = float('12.920114')  
+        longitude = float('77.4995769')
         udata.save()
             # if (UsersCustomer.objects.filter(username =username).exists() == True):
       
@@ -361,7 +360,8 @@ def vehicle_details(request):
             locations.append(data)
 
             print(locations)
-        instance_ip_or_domain = settings.instance_ip_or_domain
+        # instance_ip_or_domain = settings.instance_ip_or_domain
+            instance_ip_or_domain = os.environ.get('INSTANCE_IP_OR_DOMAIN', '0.0.0.0')
         context = {
                 "key": key, 
                 "locations": locations,
@@ -411,6 +411,23 @@ def check_booking_status(request):
     if(status.issue_resolved_status == '1'):
         issue_resolved = True  
         return JsonResponse({'issueResolved': issue_resolved})
+    if(status.issue_resolved_status == '2'):
+        issue_resolved = False  
+        return JsonResponse({'issueResolved': issue_resolved})
+    
+    return JsonResponse({'issueResolved': issue_resolved})
+
+def check_issues_status(request):
+    cust_username = request.session['cust_username']
+    status = Booking_status.objects.get(cust_username = cust_username )
+    issue_resolved = 0  
+    if(status.issue_resolved_status == '1'):
+        issue_resolved = 1  
+        return JsonResponse({'issueResolved': issue_resolved})
+    if(status.issue_resolved_status == '2'):
+        issue_resolved = 2  
+        return JsonResponse({'issueResolved': issue_resolved})
+    
     return JsonResponse({'issueResolved': issue_resolved})
 
 def waiting_page(request):
@@ -447,7 +464,8 @@ def waiting_page(request):
         }
         print(cust_lat)
         locations.append(data)
-        instance_ip_or_domain = settings.instance_ip_or_domain
+        # instance_ip_or_domain = settings.instance_ip_or_domain
+        instance_ip_or_domain = os.environ.get('INSTANCE_IP_OR_DOMAIN', '0.0.0.0')
 
         return render(request,'waiting_page.html',
                     {'card_data':mech_username,
@@ -471,9 +489,12 @@ def feedback(request):
         # feedback_desc = request.POST.get('desc', '')
         
         form = FeedbackForm(request.POST)
-        
-        if form.is_valid():
-            form.save()
+        rating = request.POST.get('rating')
+        issue_description = request.POST.get('issue_description')
+        print(rating)
+        print(issue_description)
+        # if form.is_valid():
+        #     form.save()
         status.issue_resolved_status = 1
         status.mech_assigned = 0
         status.save()
@@ -491,11 +512,51 @@ def feedback(request):
         profile.rating = 4
 
         profile.save()
-
+        feed = Feedback(issueid = issue.issueid,cust_username = cust_username,mech_username = status.mech_username,issue_description=issue_description,rating = rating )
+        feed.save()
         return redirect('home_page')
     else:
         form = FeedbackForm()
     return render(request,"feedback.html", {'form': form})
+
+def feedback_failure(request):
+    if request.method == 'POST':
+        cust_username = request.session['cust_username']
+        status = Booking_status.objects.get(cust_username = cust_username )
+        # feedback_desc = request.POST.get('desc', '')
+        
+        form = FeedbackForm(request.POST)
+        rating = request.POST.get('rating')
+        issue_description = request.POST.get('issue_description')
+        print(rating)
+        print(issue_description)
+        # if form.is_valid():
+        #     form.save()
+        status.issue_resolved_status = 0
+        status.mech_assigned = 0
+        status.save()
+        booking = Bookings(booking_time = status.booking_time,booking_date= status.booking_date,mech_name = status.mech_name ,cust_username =cust_username)
+        mech_phone = UsersMechanic.objects.get(username = status.mech_username)
+        booking.phone = mech_phone.mobile
+        issue = UsersCurrentAddress.objects.get(username = cust_username)
+        booking.issue_desc = issue.issuedesc
+        booking.save()   
+        no_of_bookings = Profile.objects.get(cust_username = cust_username)
+        b = int(no_of_bookings.no_of_bookings)
+        b += 1
+        no_of_bookings.save()
+        profile = Profile_mechanic.objects.get(mech_username = status.mech_username )
+        profile.rating = str(rating)
+
+        profile.save()
+        feed = Feedback(issueid = issue.issueid,cust_username = cust_username,mech_username = status.mech_username,issue_description=issue_description,rating = rating )
+        feed.save()
+        context = request.session['context'] 
+            
+        return render(request, 'customer_map.html', context=context)
+    else:
+        form = FeedbackForm()
+    return render(request,"feedback_failure.html", {'form': form})
 
 def home_page(request):
     return render(request,"landing_page.html") 
@@ -505,7 +566,7 @@ def Booking_histroy(request):
     bookings = []
     book_data = Bookings.objects.filter(cust_username = cust_username)
     for i in book_data:
-        
+        print("mech name ",i.mech_name)
         data = {
             "booking_time" : i.booking_time,
             "booking_date" : i.booking_date,
