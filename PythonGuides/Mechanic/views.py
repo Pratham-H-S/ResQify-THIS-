@@ -405,7 +405,7 @@ def display_info(request,username):
     status.booking_time = time
     status.booking_date = formatted_datetime
     status.save()
-    book = Bookings_mech(mech_username = mech_username, cust_username= cust_username, booking_date =formatted_datetime, booking_time = time, issue_desc = add.issuedesc )
+    book = mech_Bookings(mech_username = mech_username, cust_username= cust_username, booking_date =formatted_datetime, booking_time = time, issue_desc = add.issuedesc )
     book.save()
     profile = Profile_mechanic.objects.get(mech_username = mech_username )
     val = int(profile.no_of_bookings)
