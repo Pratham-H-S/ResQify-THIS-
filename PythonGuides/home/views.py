@@ -85,7 +85,7 @@ def signup(request):
                 ldata.save()
                 issue = Booking_status(cust_username=username)
                 issue.save()
-                profil = Profile(cust_username=username,rating = 5,phone=phone,no_of_bookings = 0,cust_name = name)
+                profil = Profile(cust_username=username,rating = '4',phone=phone,no_of_bookings = '0',cust_name = name)
                 profil.save()
                 request.session['cust_username'] = username
                 return redirect('otp')
