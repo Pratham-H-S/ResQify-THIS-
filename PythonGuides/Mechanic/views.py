@@ -539,13 +539,13 @@ def mech_unresolved(request):
 def mech_bookings(request):
     mech_username = request.session['username']
     bookings = []
-    book_data = Bookings_mech.objects.filter(mech_username = mech_username)
+    book_data = mech_Bookings.objects.filter(mech_username = mech_username)
     for i in book_data:
         
         data = {
             "booking_time" : i.booking_time,
             "booking_date" : i.booking_date,
-            "mech_name" : i.cust_username,
+            "cust_username" : i.cust_username,
             
             "issue_desc" : i.issue_desc 
         }
