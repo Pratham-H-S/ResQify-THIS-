@@ -29,7 +29,7 @@ def signup_mech(request):
                     request.session['username'] = username
                     data.save()
                     profile = Profile_mechanic(mech_username=username,mech_name = name)
-                    profile.no_of_bookings = 0
+                    profile.no_of_bookings = '0'
                     profile.save()
                     return redirect('verify_email_otp')
                 
