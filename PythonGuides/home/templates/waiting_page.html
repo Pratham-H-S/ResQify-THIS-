@@ -199,28 +199,36 @@
         <script>
             // Set the estimated time in minutes
             var estimatedTimeInMinutes = {{ duration_minutes }}; // Replace with the actual estimated time
-        
+            var originalTime = estimatedTimeInMinutes; // Store the initial time
+          
             // Function to update the countdown timer
             function updateCountdown() {
-                var minutes = Math.floor(estimatedTimeInMinutes / 60);
-                var seconds = estimatedTimeInMinutes % 60;
-        
-                // Display the countdown in the specified format
-                document.getElementById('countdown').innerText = (minutes < 10 ? '0' : '') + minutes + ':' + (seconds < 10 ? '0' : '') + seconds;
-        
-                // Update the estimated time every second
-                estimatedTimeInMinutes--;
-        
-                // Stop the countdown when it reaches zero
-                if (estimatedTimeInMinutes < 0) {
-                    clearInterval(countdownInterval);
-                    document.getElementById('countdown').innerText = '00:00';
-                }
+              var minutes = Math.floor(estimatedTimeInMinutes / 60);
+              var seconds = estimatedTimeInMinutes % 60;
+          
+              // Display the countdown in the specified format
+              document.getElementById('countdown').innerText = (minutes < 10 ? '0' : '') + minutes + ':' + (seconds < 10 ? '0' : '') + seconds;
+          
+              // Check if time is below 2 minutes and reset if needed
+              if (estimatedTimeInMinutes < 2) {
+                estimatedTimeInMinutes = originalTime + 5; // Add 5 minutes back to the timer
+                console.log("Timer automatically extended by 5 minutes!");
+              }
+          
+              // Update the estimated time every second
+              estimatedTimeInMinutes--;
+          
+              // Stop the countdown when it reaches zero
+              if (estimatedTimeInMinutes < 0) {
+                clearInterval(countdownInterval);
+                document.getElementById('countdown').innerText = '00:00';
+              }
             }
-        
+          
             // Update the countdown every second
             var countdownInterval = setInterval(updateCountdown, 1000);
-        </script>
+          </script>
+          
         
 
         <!-- Map Section -->
@@ -293,12 +301,28 @@
                             // Redirect to the feedback page
                             window.location.href = '{% url "feedback" %}';
                         }
+                        
+                    })
+                    .catch(error => console.error('Error checking issue status:', error));
+            }
+            function elsecheckIssueStatus() {
+                const instanceIPorDomain = "{{ instance_ip_or_domain }}";
+                fetch(`http://${instanceIPorDomain}:8001/else_check_booking_status`)
+                    .then(response => response.json())
+                    .then(data => {
+                        // Check if the issue is resolved
+                        if (!data.issueResolved) {
+                            // Redirect to the feedback page
+                            window.location.href = '{% url "vehicle_details" %}';
+                        }
+                        
                     })
                     .catch(error => console.error('Error checking issue status:', error));
             }
             
             // Call the checkIssueStatus function every 5 minutes (300,000 milliseconds)
             setInterval(checkIssueStatus, 3000);
+            setInterval(elsecheckIssueStatus, 3000);
             
         </script>
     </form>
