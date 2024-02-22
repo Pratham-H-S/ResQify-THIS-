@@ -90,9 +90,9 @@ def signup(request):
                 request.session['cust_username'] = username
                 return redirect('otp')
         else:
-            return render(request, 'login_final.html')
+            return render(request, 'loginSignup.html')
   
-    return render(request, 'login_final.html')
+    return render(request, 'loginSignup.html')
 
 
 def forgot_password(request):
