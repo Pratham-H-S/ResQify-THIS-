@@ -7,8 +7,9 @@ import googlemaps
 import json
 from datetime import datetime
 
-# Create your views here.
+
 def signup_mech(request):
+    error_message = None
     if request.method == 'POST':
         if  request.method == 'POST':
             name = request.POST['name']
@@ -22,8 +23,9 @@ def signup_mech(request):
             if (password1 == password2):
                 encryptpass= encrypt(password1)
                 if UsersMechanic.objects.filter(username =username).exists():
+                    error_message = 'User already exists'
                     
-                    return HttpResponse('User already exits')
+                    return render(request, 'Mechanic/loginSignup.html',{'error_messages': error_message})
                 else:
                     data = UsersMechanic(name=name,username=username,email=email,mobile=phone,password= encryptpass,mech_email_verified = '0')
                     request.session['username'] = username
@@ -34,9 +36,12 @@ def signup_mech(request):
                     return redirect('verify_email_otp')
                 
             else:
-                return render(request, 'Mechanic/loginSignup.html')
+                error_message = 'Password does not match'
+                    
+                return render(request, 'Mechanic/loginSignup.html',{'error_messages': error_message})
         
     return render(request,'Mechanic/loginSignup.html')
+
 
 
 global no
@@ -100,8 +105,8 @@ def mech_details(request):
    
 
     return render(request,'Mechanic/mech_details.html')
-
 def mech_login(request):
+    error_message = None
     if request.method == 'POST':
         username = request.POST['username']
         print(username)
@@ -120,7 +125,6 @@ def mech_login(request):
             error_message = 'Invalid username or password'
     
     return render(request,'Mechanic/loginSignup.html',{'error_message': error_message})
-
 def mech_forgot_password(request):
     if request.method == 'POST':
         username = request.POST.get('username', '')
@@ -236,7 +240,7 @@ def get_vehicle_data(request):
     major = UsersCurrentAddress.objects.filter(issuetype = 'major',issue_status_id= '0')
     now = datetime.now()
     data = []
-    i =0 
+    i = 0 
     for address in major:
         gmaps = googlemaps.Client(key=settings.GOOGLE_API_KEY)
         result = gmaps.reverse_geocode((address.lat, address.lng))
@@ -266,7 +270,79 @@ def get_vehicle_data(request):
         data.append(var)
         print(var)    
         i += 1 
-        if (i == 5):
+        if (i == 3):
+            break
+    print(data)
+    minor = UsersCurrentAddress.objects.filter(issuetype = 'minor',issue_status_id= '0')
+    now = datetime.now()
+    
+    i = 0 
+    for address in minor:
+        gmaps = googlemaps.Client(key=settings.GOOGLE_API_KEY)
+        result = gmaps.reverse_geocode((address.lat, address.lng))
+        add = result[0]['formatted_address']
+        # update = UsersCurrentAddress(username = username,lat = address.lat,lng =address.lng,address = add)
+        # update.save()
+        gmaps = googlemaps.Client(key= settings.GOOGLE_API_KEY)
+        calculate = gmaps.distance_matrix(
+                    from_adress_string,
+                    add,
+                    mode = 'driving',
+                    departure_time = now
+            )
+        duration_seconds = calculate['rows'][0]['elements'][0]['duration']['value']
+        duration_minutes = round(duration_seconds/60, 2)
+
+        distance_meters = calculate['rows'][0]['elements'][0]['distance']['value']
+        distance_kilometers = distance_meters/1000
+        
+        var = {
+                'username': address.username, 
+                'issue_description': address.issuedesc,
+                'contact':  address.phone,
+                'distance': distance_kilometers,
+                'time':duration_minutes
+            }
+        data.append(var)
+        print(var)    
+        i += 1 
+        if (i == 3):
+            break
+    print(data)
+    low = UsersCurrentAddress.objects.filter(issuetype = 'low',issue_status_id= '0')
+    now = datetime.now()
+    
+    i = 0 
+    for address in low:
+        gmaps = googlemaps.Client(key=settings.GOOGLE_API_KEY)
+        result = gmaps.reverse_geocode((address.lat, address.lng))
+        add = result[0]['formatted_address']
+        # update = UsersCurrentAddress(username = username,lat = address.lat,lng =address.lng,address = add)
+        # update.save()
+        gmaps = googlemaps.Client(key= settings.GOOGLE_API_KEY)
+        calculate = gmaps.distance_matrix(
+                    from_adress_string,
+                    add,
+                    mode = 'driving',
+                    departure_time = now
+            )
+        duration_seconds = calculate['rows'][0]['elements'][0]['duration']['value']
+        duration_minutes = round(duration_seconds/60, 2)
+
+        distance_meters = calculate['rows'][0]['elements'][0]['distance']['value']
+        distance_kilometers = distance_meters/1000
+        
+        var = {
+                'username': address.username, 
+                'issue_description': address.issuedesc,
+                'contact':  address.phone,
+                'distance': distance_kilometers,
+                'time':duration_minutes
+            }
+        data.append(var)
+        print(var)    
+        i += 1 
+        if (i == 3):
             break
     print(data)
         
