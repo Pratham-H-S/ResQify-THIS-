@@ -115,13 +115,11 @@ def mech_login(request):
                 request.session['username'] = verify.username
                 return redirect('mech_dashboard')
             else:
-                return HttpResponse('user not found or the password is wrong')
-           
-        except Exception as e:
-            print(f"Exception: {e}")
-            return HttpResponse("An error occurred during login.")
+                error_message = 'Invalid username or password'
+        except:
+            error_message = 'Invalid username or password'
     
-    return render(request,'Mechanic/loginSignup.html')
+    return render(request,'Mechanic/loginSignup.html',{'error_message': error_message})
 
 def mech_forgot_password(request):
     if request.method == 'POST':
