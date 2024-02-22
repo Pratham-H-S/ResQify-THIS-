@@ -23,4 +23,5 @@ urlpatterns = [
     path('forgot_password',forgot_password,name="forgot_password"),
     path("otp_forgot_passwd",otp_forgot_passwd,name="otp_forgot_passwd"),
     path("check_booking_status",check_booking_status,name="check_booking_status"),
+    path("else_check_booking_status",else_check_booking_status,name="else_check_booking_status"),
 ]
