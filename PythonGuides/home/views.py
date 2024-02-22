@@ -419,7 +419,15 @@ def check_booking_status(request):
         return JsonResponse({'issueResolved': issue_resolved})
     
     return JsonResponse({'issueResolved': issue_resolved})
-
+def else_check_booking_status(request):
+    cust_username = request.session['cust_username']
+    status = Booking_status.objects.get(cust_username = cust_username )
+    issue_resolved = True  
+    if(status.issue_resolved_status == '2'):
+        issue_resolved = False  
+        return JsonResponse({'issueResolved': issue_resolved})
+    
+    return JsonResponse({'issueResolved': issue_resolved})
 def check_issues_status(request):
     cust_username = request.session['cust_username']
     status = Booking_status.objects.get(cust_username = cust_username )
