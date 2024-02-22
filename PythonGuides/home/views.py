@@ -65,6 +65,7 @@ def navbar(request):
 
 
 def signup(request):
+    error_messages = None
     if  request.method == 'POST':
         name = request.POST['name']
         username = request.POST['username']
@@ -76,8 +77,8 @@ def signup(request):
         if (password1 == password2):
             encryptpass= encrypt(password1)
             if UsersCustomer.objects.filter(username =username).exists():
-                
-                return HttpResponse('User already exits')
+                error_messages = "User already exits"
+                return render(request, 'loginSignup.html',{'error_messages': error_messages})
             else:
                 data = UsersCustomer(name=name,username=username,email=email,mobile=phone,password= encryptpass,cust_email_verified = '0')
                 data.save()
@@ -90,9 +91,10 @@ def signup(request):
                 request.session['cust_username'] = username
                 return redirect('otp')
         else:
-            return render(request, 'loginSignup.html')
+            error_messages = "Password does not match"
+            return render(request, 'loginSignup.html',{'error_messages': error_messages})
   
-    return render(request, 'loginSignup.html')
+    return render(request, 'loginSignup.html',{'error_messages': error_messages})
 
 
 def forgot_password(request):
@@ -149,6 +151,7 @@ ResQify's team'''
 
 
 def login(request):
+    error_message = None
     if request.method == "POST":
         username = request.POST['username'] 
         try:
@@ -168,13 +171,13 @@ def login(request):
                 return render(request,'accept_rules.html',context= context)
                 # return redirect('accept_rules')
             else:
-                return JsonResponse({'error': 'Invalid username or password'})
-        except:
-            return JsonResponse({'error': 'Invalid username or password'})
+                error_message = 'Invalid username or password'
+        except UsersCustomer.DoesNotExist:
+            error_message = 'Invalid username or password'
         # if (verify == username):
         #     print(username)
         
-    return render(request,"loginSignup.html")
+    return render(request, "loginSignup.html", {'error_message': error_message})
 
 def logout_cust(request):
     if 'cust_username' in request.session:
